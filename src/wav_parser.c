@@ -22,7 +22,7 @@ print_fmt_chunk(fmt_subchunk_t *fmtChunk);
 // *****
 
 int main(int argc, char *argv[]) {
-	FILE *audioFile = fopen("testWavFile.wav", "rb");
+	FILE *audioFile = fopen("../testWavFile.wav", "rb");
 	riff_chunk_t audioFileRIFF;
 	fmt_subchunk_t audioFileFMT;
 

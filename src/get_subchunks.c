@@ -4,7 +4,7 @@
 void
 get_riff_chunk(FILE *file, riff_chunk_t *dataChunk) {
 	unsigned long sizeOut = 0;
-	printf("llegue aca carajo\n");	
+
 	for (int i=0; i<4; i++) dataChunk->ChunkID[i] = fgetc(file);
 	
 	for (int i=0; i<4; i++) {
