@@ -48,7 +48,7 @@ free_fmt_subchunk(fmt_ptr pFMT) {
 /* Getting parameters from file */
 
 void
-get_riff_chunk(FILE *file, riff_chunk_t *dataChunk) {
+get_riff_chunk(FILE *file, riff_ptr riffChunk) {
 	unsigned long sizeOut = 0;
 
 	for (int i=0; i<4; i++) dataChunk->ChunkID[i] = fgetc(file);
@@ -66,7 +66,7 @@ get_riff_chunk(FILE *file, riff_chunk_t *dataChunk) {
 }
 
 void
-get_fmt_subchunk(FILE *file, fmt_subchunk_t *fmtChunk) {
+get_fmt_subchunk(FILE *file, fmt_ptr pFMT) {
 	unsigned long sizeOut = 0;
 
 	fseek(file, 12, SEEK_SET);
@@ -146,7 +146,7 @@ get_fmt_subchunk(FILE *file, fmt_subchunk_t *fmtChunk) {
 /* Input and output */
 
 void
-print_riff_chunk(riff_chunk_t *riffChunk) {
+print_riff_chunk(riff_ptr pRIFF) {
 	printf("---RIFF CHUNK\n");
 	printf("ChunkID: ");
 	for (int i=0; i<4; i++) printf("%c", riffChunk->ChunkID[i]);
@@ -162,7 +162,7 @@ print_riff_chunk(riff_chunk_t *riffChunk) {
 }
 
 void
-print_fmt_chunk(fmt_subchunk_t *fmtChunk) {
+print_fmt_chunk(fmt_ptr pFMT) {
 	printf("---FMT SUBCHUNK\n");
 	printf("Subchunk1ID: ");
 	for (int i=0; i<0; i++) printf("%c", fmtChunk->Subchunk1ID[i]);

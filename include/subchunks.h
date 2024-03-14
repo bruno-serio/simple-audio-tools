@@ -3,11 +3,11 @@
 
 #include <stdio.h>
 
-typedef struct _riff_chunk riff_chunk_t;
-typedef struct _fmt_subchunk fmt_subchunk_t;
+//typedef struct _riff_chunk riff_chunk_t;
+//typedef struct _fmt_subchunk fmt_subchunk_t;
 
-typedef riff_chunk_t *riff_ptr;
-typedef fmt_subchunk_t *fmt_ptr;
+typedef _riff_chunk *riff_ptr;
+typedef _fmt_subchunk *fmt_ptr;
 
 /* Memory allocation and freeing */
 
@@ -26,18 +26,18 @@ free_fmt_subchunk(fmt_ptr pFMT);
 /* Getting parameters from file */
 
 void
-get_riff_chunk(FILE *file, riff_chunk_t *dataChunk);
+get_riff_chunk(FILE *file, riff_ptr pRIFF);
 
 void
-get_fmt_subchunk(FILE *file, fmt_subchunk_t *fmtChunk);
+get_fmt_subchunk(FILE *file, fmt_ptr pFMT);
 
 /* Input and output */
 
 void
-print_riff_chunk(riff_chunk_t *riffChunk);
+print_riff_chunk(riff_ptr pRIFF);
 
 void
-print_fmt_chunk(fmt_subchunk_t *fmtChunk);
+print_fmt_chunk(fmt_ptr pFMT);
 
 unsigned long
 get_riff_chunksize(riff_ptr pRIFF);
