@@ -1,5 +1,6 @@
 bin/
 nvim-source/
 output/
+wav-files/
 testWavFile.wav
 *.o
