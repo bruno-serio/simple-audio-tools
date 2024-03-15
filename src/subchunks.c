@@ -169,7 +169,7 @@ void
 print_fmt_subchunk(fmt_ptr pFMT) {
 	printf("---FMT SUBCHUNK\n");
 	printf("Subchunk1ID: ");
-	for (int i=0; i<0; i++) printf("%c", pFMT->Subchunk1ID[i]);
+	for (int i=0; i<4; i++) printf("%c", pFMT->Subchunk1ID[i]);
 	printf("\n");
 
 	printf("Subchunk1Size %ld\n", pFMT->Subchunk1Size);
