@@ -2,20 +2,21 @@
 #define _SUBCHUNKS_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 
 //typedef struct _riff_chunk riff_chunk_t;
 //typedef struct _fmt_subchunk fmt_subchunk_t;
 
-typedef _riff_chunk *riff_ptr;
-typedef _fmt_subchunk *fmt_ptr;
+typedef struct _riff_chunk *riff_ptr;
+typedef struct _fmt_subchunk *fmt_ptr;
 
 /* Memory allocation and freeing */
 
-void
-alloc_riff_chunk(riff_ptr pRIFF);
+riff_ptr
+alloc_riff_chunk();
 
-void
-alloc_fmt_subchunk(fmt_ptr pFMT);
+fmt_ptr
+alloc_fmt_subchunk();
 
 void
 free_riff_chunk(riff_ptr pRIFF);
@@ -37,7 +38,7 @@ void
 print_riff_chunk(riff_ptr pRIFF);
 
 void
-print_fmt_chunk(fmt_ptr pFMT);
+print_fmt_subchunk(fmt_ptr pFMT);
 
 unsigned long
 get_riff_chunksize(riff_ptr pRIFF);

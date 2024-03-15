@@ -21,27 +21,31 @@ struct _fmt_subchunk {
 
 /* Memory allocation and freeing */
 
-void
-alloc_riff_chunk(riff_ptr pRIFF) {
-
-	return;
+riff_ptr
+alloc_riff_chunk() {
+	riff_ptr riff = NULL;
+	riff = malloc(sizeof(struct _riff_chunk));
+	return riff;
 }
 
-void
-alloc_fmt_subchunk(fmt_ptr pFMT) {
-
-	return;
+fmt_ptr
+alloc_fmt_subchunk() {
+	fmt_ptr fmt = NULL;
+	fmt = malloc(sizeof(struct _fmt_subchunk));
+	return fmt;
 }
 
 void
 free_riff_chunk(riff_ptr pRIFF) {
-
+	free(pRIFF);
+	pRIFF = NULL;
 	return;
 }
 
 void
 free_fmt_subchunk(fmt_ptr pFMT) {
-
+	free(pFMT);
+	pFMT = NULL;
 	return;
 }
 
@@ -162,7 +166,7 @@ print_riff_chunk(riff_ptr pRIFF) {
 }
 
 void
-print_fmt_chunk(fmt_ptr pFMT) {
+print_fmt_subchunk(fmt_ptr pFMT) {
 	printf("---FMT SUBCHUNK\n");
 	printf("Subchunk1ID: ");
 	for (int i=0; i<0; i++) printf("%c", pFMT->Subchunk1ID[i]);
@@ -195,5 +199,5 @@ get_byte_rate(fmt_ptr pFMT) {
 
 unsigned short
 get_bits_per_sample(fmt_ptr pFMT) {
-	return pFMT->BitPerSample;
+	return pFMT->BitsPerSample;
 }
