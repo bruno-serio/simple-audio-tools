@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 	
 	print_riff_chunk(RIFF);
 	print_fmt_subchunk(FMT);
-	print_data_header(FMT);
+	print_data_header(dataHeader);
 	//get_abs_peak(audioFile);
 
 	fclose(audioFile);
