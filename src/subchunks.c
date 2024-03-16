@@ -18,6 +18,10 @@ struct _fmt_subchunk {
 	unsigned short BitsPerSample;
 };
 
+struct _data_header {
+	char Subchunk2ID[4];
+	unsigned long Subchunk2Size;
+};
 
 /* Memory allocation and freeing */
 
@@ -35,6 +39,13 @@ alloc_fmt_subchunk() {
 	return fmt;
 }
 
+data_header_ptr
+alloc_data_header() {
+	data_header_ptr pDataH = NULL;
+	pDataH = malloc(sizeof(struct _data_header));
+	return pDataH;
+}
+
 void
 free_riff_chunk(riff_ptr pRIFF) {
 	free(pRIFF);
@@ -46,6 +57,13 @@ void
 free_fmt_subchunk(fmt_ptr pFMT) {
 	free(pFMT);
 	pFMT = NULL;
+	return;
+}
+
+void
+free_data_header(data_header_ptr pDataH) {
+	free(pDataH);
+	pDataH = NULL;
 	return;
 }
 
@@ -147,6 +165,33 @@ get_fmt_subchunk(FILE *file, fmt_ptr pFMT) {
 	return;
 }
 
+void
+get_data_header(FILE *file, data_header_ptr pDataH) {
+	unsigned long sizeOut = 0;
+
+	fseek(file, 36, SEEK_SET);
+
+	pDataH->Subchunk2ID[0] = fgetc(file);
+	printf("%c\n", pDataH->Subchunk2ID[0]);
+	if (pDataH->Subchunk2ID[0] == 'f') fseek(file, 12, SEEK_CUR);
+
+	pDataH->Subchunk2ID[0] = fgetc(file);
+	if (pDataH->Subchunk2ID[0] == 'P') fseek(file, 20, SEEK_CUR);
+
+	pDataH->Subchunk2ID[0] = fgetc(file);
+
+	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
+	
+	for (int i=0; i<4; i++) {
+		unsigned char iByteOfSize = fgetc(file);
+		sizeOut += iByteOfSize << (i*8);
+	}
+	
+	pDataH->Subchunk2Size = sizeOut;
+
+	return;
+}
+
 /* Input and output */
 
 void
@@ -182,6 +227,19 @@ print_fmt_subchunk(fmt_ptr pFMT) {
 	return;
 }
 
+void
+print_data_header(data_header_ptr pDataH) {
+	printf("---DATA HEADER\n");
+
+	printf("Subchunk2ID: ");
+	for (int i=0; i<4; i++) printf("%c", pDataH->Subchunk2ID[i]);
+	printf("\n");
+
+	printf("Subchunk2Size: %ld\n", pDataH->Subchunk2Size);
+	return;
+}
+
+
 unsigned long
 get_riff_chunksize(riff_ptr pRIFF) {
 	return pRIFF->ChunkSize;
@@ -200,4 +258,9 @@ get_byte_rate(fmt_ptr pFMT) {
 unsigned short
 get_bits_per_sample(fmt_ptr pFMT) {
 	return pFMT->BitsPerSample;
+}
+
+unsigned long
+get_data_size(data_header_ptr pDataH) {
+	return pDataH->Subchunk2Size;
 }

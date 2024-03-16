@@ -20,11 +20,14 @@ int main(int argc, char *argv[]) {
 	
 	fmt_ptr FMT = alloc_fmt_subchunk();
 	get_fmt_subchunk(audioFile, FMT);
-
+	
+	data_header_ptr dataHeader = alloc_data_header();
+	get_data_header(audioFile, dataHeader);
+	
 	print_riff_chunk(RIFF);
 	print_fmt_subchunk(FMT);
+	print_data_header(FMT);
 	//get_abs_peak(audioFile);
-
 
 	fclose(audioFile);
 	free_riff_chunk(RIFF);
