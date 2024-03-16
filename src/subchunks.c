@@ -171,16 +171,8 @@ get_data_header(FILE *file, data_header_ptr pDataH) {
 
 	fseek(file, 36, SEEK_SET);
 
-	pDataH->Subchunk2ID[0] = fgetc(file);
-	printf("%c\n", pDataH->Subchunk2ID[0]);
-	if (pDataH->Subchunk2ID[0] == 'f') fseek(file, 12, SEEK_CUR);
-
-	pDataH->Subchunk2ID[0] = fgetc(file);
-	if (pDataH->Subchunk2ID[0] == 'P') fseek(file, 20, SEEK_CUR);
-
-	pDataH->Subchunk2ID[0] = fgetc(file);
-
-	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
+	// write a check for when there are other chunks at this pos.
+	for (int i=0; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
 	
 	for (int i=0; i<4; i++) {
 		unsigned char iByteOfSize = fgetc(file);
