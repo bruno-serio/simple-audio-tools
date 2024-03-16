@@ -3,18 +3,19 @@
 #include <string.h>
 
 #include "../include/subchunks.h"
+#include "../include/utils.h"
 //#include "../include/exit_status.h"
 // #include <inttypes.h>
 
 // *****
 
-signed long
-get_abs_peak(FILE *file);
+signed short
+get_abs_peak16(FILE *file);
 
 // *****
 
 int main(int argc, char *argv[]) {
-	char directory[13] = "../wav-files/";
+	char directory[14] = "../wav-files/";
 
 	for (int fileN=1; fileN<argc; fileN++) {
 		char filePath[48];
@@ -39,10 +40,13 @@ int main(int argc, char *argv[]) {
 		print_data_header(dataHeader);
 		//get_abs_peak(audioFile);
 
+		printf("\n\n");
+		get_abs_peak16(audioFile);
+
 		fclose(audioFile);
 		free_riff_chunk(RIFF);
 		free_fmt_subchunk(FMT);	
-
+		free_data_header(dataHeader);
 	}
 
 	return 0;
@@ -50,13 +54,22 @@ int main(int argc, char *argv[]) {
 
 // *****
 
-signed long
-get_abs_peak(FILE *file) {
-	signed long peak = 0;
+signed short
+get_abs_peak16(FILE *file) {
+	signed short max = 0;
+	signed short min = 0;
 	fmt_ptr FMT = alloc_fmt_subchunk();
 	get_fmt_subchunk(file, FMT);
 
 	fseek(file, 44, SEEK_SET);
 
-	return peak;
+	for (int i=0;i<50;i++) {
+		signed short sample = read_16_bit_sample(file);
+		printf("sample=%2x\n", sample);
+		if (sample > max) max = sample;
+		if (sample < min) min = sample;
+	}
+
+	if (max > -min) return max;
+	return min;
 }

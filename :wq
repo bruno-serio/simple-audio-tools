@@ -1,0 +1,11 @@
+#include "../include/utils.h"
+
+signed short
+read_16_bit_sample(FILE *file) {
+	signed short sample = 0;
+	for (int=0; i<2; i++) {
+		char c = fgetc();
+		sample += (c << (8*i));
+	}
+	return sample;
+}

@@ -1,4 +1,5 @@
 #include "../include/subchunks.h"
+#include "../include/utils.h"
 //#include "../include/exit_status.h"
 
 struct _riff_chunk {
@@ -171,8 +172,11 @@ get_data_header(FILE *file, data_header_ptr pDataH) {
 
 	fseek(file, 36, SEEK_SET);
 
+	do {
+		pDataH->Subchunk2ID[0] = fgetc(file);
+	} while (pDataH->Subchunk2ID[0] != 'd');
 	// write a check for when there are other chunks at this pos.
-	for (int i=0; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
+	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
 	
 	for (int i=0; i<4; i++) {
 		unsigned char iByteOfSize = fgetc(file);
