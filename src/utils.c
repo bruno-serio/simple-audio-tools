@@ -1,4 +1,5 @@
 #include "../include/utils.h"
+#include <stdio.h>
 
 signed short
 read_16_bit_sample(FILE *file) {
@@ -7,6 +8,7 @@ read_16_bit_sample(FILE *file) {
 		char c = fgetc(file);
 		sample += (c << (8*i));
 	}
+	printf("%d", sample);
 	return sample;
 }
 
