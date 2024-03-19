@@ -9,8 +9,14 @@
 
 // *****
 
+// pasar al .h cuando cree el de abspeak
+// pasar en vez de 40 un numero imposible y ahi recorrer el archivo hasta encontrar
+#define get_abs_peak16_def(data) get_abs_peak16((data), 44)
+	
+// *****
+
 signed short
-get_abs_peak16(FILE *file);
+get_abs_peak16(FILE *file, signed long start);
 
 // *****
 
@@ -19,6 +25,8 @@ int main(int argc, char *argv[]) {
 
 	for (int fileN=1; fileN<argc; fileN++) {
 		char filePath[48];
+		long dataStart;
+
 		memset(filePath, '\0', sizeof(filePath));
 		strcpy(filePath, directory);
 		strcat(filePath,argv[fileN]);
@@ -33,7 +41,7 @@ int main(int argc, char *argv[]) {
 		get_fmt_subchunk(audioFile, FMT);
 
 		data_header_ptr dataHeader = alloc_data_header();
-		get_data_header(audioFile, dataHeader);
+		dataStart = get_data_header(audioFile, dataHeader);
 
 		print_riff_chunk(RIFF);
 		print_fmt_subchunk(FMT);
@@ -41,7 +49,7 @@ int main(int argc, char *argv[]) {
 		//get_abs_peak(audioFile);
 
 		printf("\n\n");
-		get_abs_peak16(audioFile);
+		get_abs_peak16(audioFile, dataStart);
 
 		fclose(audioFile);
 		free_riff_chunk(RIFF);
@@ -55,21 +63,33 @@ int main(int argc, char *argv[]) {
 // *****
 
 signed short
-get_abs_peak16(FILE *file) {
+get_abs_peak16(FILE *file, signed long start) {
 	signed short max = 0;
 	signed short min = 0;
+	
+
+
 	fmt_ptr FMT = alloc_fmt_subchunk();
 	get_fmt_subchunk(file, FMT);
 
-	fseek(file, 44, SEEK_SET);
+	data_header_ptr DATA = alloc_data_header();
+	get_data_header(file, DATA);
 
-	for (int i=0;i<50;i++) {
+	unsigned long sampleCount = get_data_size(DATA) / get_byte_rate(FMT);
+
+	fseek(file, start, SEEK_SET);
+
+	for (unsigned long i=0;i<sampleCount;i++) {
 		signed short sample = read_16_bit_sample(file);
-		printf("sample=%2x\n", sample);
 		if (sample > max) max = sample;
 		if (sample < min) min = sample;
 	}
 
 	if (max > -min) return max;
+	
+	printf("MIN: %d (%04x)\nMAX: %d (%04x)\n", min, min, max, max);
+
+	free_fmt_subchunk(FMT);
+	free_data_header(DATA);
 	return min;
 }

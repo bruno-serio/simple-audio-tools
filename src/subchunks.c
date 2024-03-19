@@ -166,21 +166,24 @@ get_fmt_subchunk(FILE *file, fmt_ptr pFMT) {
 	return;
 }
 
-void
+long
 get_data_header(FILE *file, data_header_ptr pDataH) {
 	unsigned long sizeOut = 0;
+	signed long dataStart = 36;
 
 	fseek(file, 36, SEEK_SET);
 
 	do {
+		dataStart++;
 		pDataH->Subchunk2ID[0] = fgetc(file);
 	} while (pDataH->Subchunk2ID[0] != 'd');
-	// write a check for when there are other chunks at this pos.
+
 	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
 	
 	for (int i=0; i<4; i++) {
 		unsigned char iByteOfSize = fgetc(file);
 		sizeOut += iByteOfSize << (i*8);
+		dataStart += 3;
 	}
 	
 	pDataH->Subchunk2Size = sizeOut;

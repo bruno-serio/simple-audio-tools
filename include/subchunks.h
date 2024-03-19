@@ -39,10 +39,10 @@ get_riff_chunk(FILE *file, riff_ptr pRIFF);
 void
 get_fmt_subchunk(FILE *file, fmt_ptr pFMT);
 
-void
+signed long
 get_data_header(FILE *file, data_header_ptr pDataH);
 
-/* Input and output */
+/* Prints and debugs */
 
 void
 print_riff_chunk(riff_ptr pRIFF);
@@ -52,6 +52,8 @@ print_fmt_subchunk(fmt_ptr pFMT);
 
 void
 print_data_header(data_header_ptr pDataH);
+
+/* Input and output */
 
 unsigned long
 get_riff_chunksize(riff_ptr pRIFF);
