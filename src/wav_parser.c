@@ -81,6 +81,7 @@ get_abs_peak16(FILE *file, signed long start) {
 
 	for (unsigned long i=0;i<sampleCount;i++) {
 		signed short sample = read_16_bit_sample(file);
+		printf("%d\n", sample);
 		if (sample > max) max = sample;
 		if (sample < min) min = sample;
 	}
