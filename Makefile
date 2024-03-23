@@ -6,6 +6,9 @@ ODIR=obj
 CDIR=src
 OUT=output
 
+TODIR=test_obj
+TCDIR=test_src
+
 SRCFILES := $(wildcard $(CDIR)/*.c)
 OBJFILES := $(patsubst $(CDIR)/%.c,$(ODIR)/%.o,$(SRCFILES))
 OUTPUT := $(OUT)/wav_parser
@@ -15,9 +18,9 @@ all: $(OUTPUT)
 testing_utils: 
 	@echo Compiling into objects
 	$(CC) $(CFLAGS) -c $(CDIR)/utils.c -o $(ODIR)/utils.o 
-	$(CC) $(CFLAGS) -c $(CDIR)/testing_utils.c -o $(ODIR)/testing_utils.o
+	$(CC) $(CFLAGS) -c $(TCDIR)/testing_utils.c -o $(TODIR)/testing_utils.o
 	@echo Linking
-	$(CC) $(CLFLAGS) $(ODIR)/testing_utils.o $(ODIR)/utils.o -o $(OUT)/utest 
+	$(CC) $(CLFLAGS) $(TODIR)/testing_utils.o $(ODIR)/utils.o -o $(OUT)/utest 
 
 
 # source to obj
@@ -32,4 +35,4 @@ $(OUTPUT): $(OBJFILES)
 
 clean:
 	@echo Cleaning.
-	rm -rf $(ODIR)/* $(OUT)/*
+	rm -rf $(ODIR)/* $(OUT)/* $(TODIR)/* 

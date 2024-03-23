@@ -188,7 +188,7 @@ get_data_header(FILE *file, data_header_ptr pDataH) {
 	
 	pDataH->Subchunk2Size = sizeOut;
 
-	return;
+	return dataStart;
 }
 
 /* Input and output */
