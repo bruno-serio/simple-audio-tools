@@ -12,6 +12,14 @@ OUTPUT := $(OUT)/wav_parser
 
 all: $(OUTPUT)
 
+testing_utils: 
+	@echo Compiling into objects
+	$(CC) $(CFLAGS) -c $(CDIR)/utils.c -o $(ODIR)/utils.o 
+	$(CC) $(CFLAGS) -c $(CDIR)/testing_utils.c -o $(ODIR)/testing_utils.o
+	@echo Linking
+	$(CC) $(CLFLAGS) $(ODIR)/testing_utils.o $(ODIR)/utils.o -o $(OUT)/utest 
+
+
 # source to obj
 $(ODIR)/%.o: $(CDIR)/%.c
 	@echo Compiling source files into object files.
@@ -23,5 +31,5 @@ $(OUTPUT): $(OBJFILES)
 	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
-	@Cleaning.
+	@echo Cleaning.
 	rm -rf $(ODIR)/* $(OUT)/*
