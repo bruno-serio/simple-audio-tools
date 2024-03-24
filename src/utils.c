@@ -5,9 +5,12 @@ signed short
 read_16_bit_sample(FILE *file) {
 	signed short sample = 0;
 	for (int i=0; i<2; i++) {
-		signed short c = fgetc(file);
+		unsigned char c = 0;
+		c = fgetc(file);
+		printf("%02x    ", c);
 		sample += (c << (8*i));
 	}
+	printf("%04x: %d\n", sample, sample);
 	return sample;
 }
 

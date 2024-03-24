@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 		//get_abs_peak(audioFile);
 
 		printf("\n\n");
-		get_abs_peak16(audioFile, dataStart);
+		get_abs_peak16(audioFile, 44);
 
 		fclose(audioFile);
 		free_riff_chunk(RIFF);
@@ -66,8 +66,6 @@ signed short
 get_abs_peak16(FILE *file, signed long start) {
 	signed short max = 0;
 	signed short min = 0;
-	
-
 
 	fmt_ptr FMT = alloc_fmt_subchunk();
 	get_fmt_subchunk(file, FMT);
@@ -81,7 +79,6 @@ get_abs_peak16(FILE *file, signed long start) {
 
 	for (unsigned long i=0;i<sampleCount;i++) {
 		signed short sample = read_16_bit_sample(file);
-		printf("%d\n", sample);
 		if (sample > max) max = sample;
 		if (sample < min) min = sample;
 	}
