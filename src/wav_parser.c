@@ -83,6 +83,7 @@ get_abs_peak16(FILE *file, signed long start) {
 		if (sample < min) min = sample;
 	}
 
+	// ESTO ESTA MAL !!
 	if (max > -min) return max;
 	
 	printf("MIN: %d (%04x)\nMAX: %d (%04x)\n", min, min, max, max);
