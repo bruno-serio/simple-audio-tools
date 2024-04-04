@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
 
 		data_header_ptr dataHeader = alloc_data_header();
 		dataStart = get_data_header(audioFile, dataHeader);
+		printf("%ld", dataStart);
 
 		print_riff_chunk(RIFF);
 		print_fmt_subchunk(FMT);
@@ -73,7 +74,9 @@ get_abs_peak16(FILE *file, signed long start) {
 	data_header_ptr DATA = alloc_data_header();
 	get_data_header(file, DATA);
 
-	unsigned long sampleCount = get_data_size(DATA) / get_byte_rate(FMT);
+	unsigned long sampleCount = get_data_size(DATA);// / get_byte_rate(FMT);
+
+	printf("DATA = %ld\nByteRate = %ld\nsampleCount = %ld\n", get_data_size(DATA), get_byte_rate(FMT), sampleCount);
 
 	fseek(file, start, SEEK_SET);
 
@@ -83,12 +86,10 @@ get_abs_peak16(FILE *file, signed long start) {
 		if (sample < min) min = sample;
 	}
 
-	// ESTO ESTA MAL !!
-	if (max > -min) return max;
-	
 	printf("MIN: %d (%04x)\nMAX: %d (%04x)\n", min, min, max, max);
 
 	free_fmt_subchunk(FMT);
 	free_data_header(DATA);
-	return min;
+	if (max > -min) return max;
+	return -min;
 }

@@ -7,10 +7,10 @@ read_16_bit_sample(FILE *file) {
 	for (int i=0; i<2; i++) {
 		unsigned char c = 0;
 		c = fgetc(file);
-		printf("%02x    ", c);
+//		printf("%02x ", c);
 		sample += (c << (8*i));
 	}
-	printf("%04x: %d\n", sample, sample);
+//	printf("%04x: %d\n", sample, sample);
 	return sample;
 }
 
