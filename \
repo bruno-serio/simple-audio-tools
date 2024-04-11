@@ -86,9 +86,14 @@ get_abs_peak16(FILE *file, signed long start) {
 		if (sample < min) min = sample;
 	}
 
-//	printf("MIN: %d (%04x)\nMAX: %d (%04x)\n", min, min, max, max);
+	signed short opp_min = (-min);
+	printf("MIN: %d (%04x)\nMAX: %d (%04x)\n", min, min, max, max);
+	printf("-MIN: %d (%04x)\n", (-min), (-min));
+	printf("OPPMIN: %d (%04x)\n", opp_min, opp_min);
 
 	free_fmt_subchunk(FMT);
 	free_data_header(DATA);
-	return ((max >= (-min)) ? max : -(min+1));
+	return ({(max >= (-min)) ? max : (5-min);});
+	//if (max > -min) return max;
+	//return -min;
 }
