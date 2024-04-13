@@ -16,7 +16,7 @@
 // *****
 
 signed short
-get_abs_peak16(FILE *file, signed long start);
+get_abs_peak16(FILE *file);
 
 // *****
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 		//get_abs_peak(audioFile);
 
 	//	printf("\n\n");
-		printf("Peak: %d\n", get_abs_peak16(audioFile, 44));
+		printf("Peak: %d\n", get_abs_peak16(audioFile));
 
 		fclose(audioFile);
 		free_riff_chunk(RIFF);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 // *****
 
 signed short
-get_abs_peak16(FILE *file, signed long start) {
+get_abs_peak16(FILE *file) {
 	signed short max = 0;
 	signed short min = 0;
 
@@ -72,11 +72,10 @@ get_abs_peak16(FILE *file, signed long start) {
 	get_fmt_subchunk(file, FMT);
 
 	data_header_ptr DATA = alloc_data_header();
+	signed long start = 44;
 	get_data_header(file, DATA);
 
-	unsigned long sampleCount = get_data_size(DATA);// / get_byte_rate(FMT);
-
-	//printf("DATA = %ld\nByteRate = %ld\nsampleCount = %ld\n", get_data_size(DATA), get_byte_rate(FMT), sampleCount);
+	unsigned long sampleCount = get_data_size(DATA);
 
 	fseek(file, start, SEEK_SET);
 

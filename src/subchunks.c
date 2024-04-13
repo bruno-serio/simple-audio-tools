@@ -166,7 +166,7 @@ get_fmt_subchunk(FILE *file, fmt_ptr pFMT) {
 	return;
 }
 
-long
+signed long
 get_data_header(FILE *file, data_header_ptr pDataH) {
 	unsigned long sizeOut = 0;
 	signed long dataStart = 36;
