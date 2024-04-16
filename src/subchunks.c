@@ -1,6 +1,5 @@
 #include "../include/subchunks.h"
 #include "../include/utils.h"
-//#include "../include/exit_status.h"
 
 struct _riff_chunk {
 	char ChunkID[4];
@@ -169,7 +168,7 @@ get_fmt_subchunk(FILE *file, fmt_ptr pFMT) {
 signed long
 get_data_header(FILE *file, data_header_ptr pDataH) {
 	unsigned long sizeOut = 0;
-	signed long dataStart = 36;
+	signed long dataStart = 35;
 
 	fseek(file, 36, SEEK_SET);
 
@@ -179,11 +178,12 @@ get_data_header(FILE *file, data_header_ptr pDataH) {
 	} while (pDataH->Subchunk2ID[0] != 'd');
 
 	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
-	
+	dataStart += 4;
+
 	for (int i=0; i<4; i++) {
 		unsigned char iByteOfSize = fgetc(file);
 		sizeOut += iByteOfSize << (i*8);
-		dataStart += 3;
+		dataStart++;
 	}
 	
 	pDataH->Subchunk2Size = sizeOut;
