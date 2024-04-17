@@ -4,9 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//typedef struct _riff_chunk riff_chunk_t;
-//typedef struct _fmt_subchunk fmt_subchunk_t;
-
 typedef struct _riff_chunk *riff_ptr;
 typedef struct _fmt_subchunk *fmt_ptr;
 typedef struct _data_header *data_header_ptr;

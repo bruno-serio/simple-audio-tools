@@ -9,10 +9,6 @@
 
 // *****
 
-// pasar al .h cuando cree el de abspeak
-// pasar en vez de 40 un numero imposible y ahi recorrer el archivo hasta encontrar
-#define get_abs_peak16_def(data) get_abs_peak16((data), 44)
-	
 // *****
 
 // *****
