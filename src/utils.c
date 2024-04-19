@@ -6,11 +6,9 @@ read_little_endian(FILE *file, unsigned char bits) {
 	if (bits % 8 != 0)
 		exit_error(NOT_8_BIT_MULT);
 	signed long sample = 0;
-	for (int i=0; i<bits/8; i++) {
-		unsigned char c = 0;
-		c = fgetc(file);
-		sample += (c << (8*i));
-	}
+	for (int i=0; i<bits/8; i++)
+		sample += ((unsigned char)fgetc(file) << (8*i));
+
 	return sample;
 }
 

@@ -4,6 +4,9 @@ void
 exit_error (exit_message_t code) {
 
 	switch (code) {
+		case SUCCESS:
+			printf("The operation was successful!\n");
+			break;
 		case NOT_8_BIT_MULT:
 			printf("The number of bits is not a multiple of 8.\n");
 			break;

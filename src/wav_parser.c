@@ -5,6 +5,7 @@
 #include "../include/subchunks.h"
 #include "../include/data_processing.h"
 #include "../include/utils.h"
+#include "../include/exit_messages.h"
 // #include <inttypes.h>
 
 // *****
@@ -14,6 +15,7 @@
 // *****
 
 int main(int argc, char *argv[]) {
+	exit_error(7);
 	char directory[14] = "../wav-files/";
 
 	for (int fileN=1; fileN<2/*argc*/; fileN++) {

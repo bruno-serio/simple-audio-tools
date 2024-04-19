@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 enum EXIT {
+	SUCCESS,
 	UNEXPECTED_ERROR,
 	NOT_8_BIT_MULT,
 	PASSED_NULL_POINTER,
