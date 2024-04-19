@@ -11,6 +11,7 @@ get_abs_peak16(FILE *file) {
 	get_fmt_subchunk(file, FMT);
 
 	data_header_ptr DATA = alloc_data_header();
+	unsigned short BitsPerSample = get_bits_per_sample(FMT);
 	signed long start = get_data_header(file, DATA);
 
 	unsigned long sampleCount = get_data_size(DATA);
@@ -18,7 +19,7 @@ get_abs_peak16(FILE *file) {
 	fseek(file, start, SEEK_SET);
 
 	for (unsigned long i=0;i<sampleCount;i++) {
-		signed short sample = read_16_bit_sample(file);
+		signed short sample = read_little_endian(file, BitsPerSample);
 		if (sample > max) max = sample;
 		if (sample < min) min = sample;
 	}

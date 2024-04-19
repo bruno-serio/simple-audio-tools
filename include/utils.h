@@ -1,14 +1,11 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 #include <stdio.h>
+#include <stdlib.h>
 
-signed short
-read_16_bit_sample(FILE *file);
+#define read_sample(f, b) read_little_endian(f, b)
 
 signed long
-read_24_bit_sample(FILE *file);
-
-signed long 
-read_32_bit_sample(FILE *file);
+read_little_endian(FILE *file, unsigned char BitsPerSample);
 
 #endif // _UTILS_H_

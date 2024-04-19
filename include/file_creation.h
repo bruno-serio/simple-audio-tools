@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include "subchunks.h"
+#include "subchunks.h"
 
 // returns offset for writing data
 signed int
