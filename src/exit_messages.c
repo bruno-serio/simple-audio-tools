@@ -11,7 +11,15 @@ exit_error (exit_message_t code) {
 		case PASSED_NULL_POINTER:
 			printf("Caught invalid NULL pointer.\n");
 			break;
+		
+		case BLOCK_ALIGN_TEST_FAIL:
+			printf("Block Align test failed.\n");
+			break;
 
+		case BYTE_RATE_TEST_FAIL:
+			printf("Byte Rate test failed.\n");
+			break;
+		
 		case UNEXPECTED_ERROR:
 		default:
 			printf("An unexpected error has ocurred!\n");

@@ -16,12 +16,11 @@ read_little_endian(FILE *file, unsigned char bits) {
 
 void
 write_little_endian(FILE *fileOut, signed long n, unsigned char bits) {
-	if (fileOut == NULL) {
+	if (fileOut == NULL)
 		exit_error(PASSED_NULL_POINTER);
 	if (bits % 8 != 0)
 		exit_error(NOT_8_BIT_MULT);
 
-	for (int i=0; i<bits/8; i++) {
+	for (int i=0; i<bits/8; i++)
 		fputc((int)((n >> (8*i)) & 0xff), fileOut);
-	}
 }

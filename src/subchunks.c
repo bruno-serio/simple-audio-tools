@@ -1,5 +1,6 @@
 #include "../include/subchunks.h"
 #include "../include/utils.h"
+#include "../include/exit_messages.h"
 
 struct _riff_chunk {
 	char ChunkID[4];
@@ -83,33 +84,21 @@ get_fmt_subchunk(FILE *file) {
 	fmt_ptr pFMT = alloc_fmt_subchunk();
 	fseek(file, 12, SEEK_SET);
 
-	// SUBCHUNK1 ID - fmt
 	for (int i=0; i<4; i++) pFMT->Subchunk1ID[i] = fgetc(file);
-	// SUBCHUNK1 SIZE
 	pFMT->Subchunk1Size = (unsigned long)read_little_endian(file, 32);
-	// AUDIO FORMAT
 	pFMT->AudioFormat = (unsigned short)(read_little_endian(file, 16));
-	// NUM CHANNELS
 	pFMT->NumChannels = (unsigned short)(read_little_endian(file, 16));
-	// SAMPLE RATE
 	pFMT->SampleRate = (unsigned long)read_little_endian(file, 32);
-	// BYTE RATE
 	pFMT->ByteRate = (unsigned long)read_little_endian(file, 32);
-	// BLOCK ALIGN
 	pFMT->BlockAlign = (unsigned short)(read_little_endian(file, 16));
-	// BITS PER SAMPLE
 	pFMT->BitsPerSample = (unsigned short)(read_little_endian(file, 16));
 
 	// CHECKS
-	if (pFMT->BlockAlign != (pFMT->NumChannels * pFMT->BitsPerSample/8)) {
-		printf("BLOCK ALIGN CHECK FAILED!\n");
-		exit(6);
-	}
+	if (pFMT->BlockAlign != (pFMT->NumChannels * pFMT->BitsPerSample/8))
+		exit_error(BLOCK_ALIGN_TEST_FAIL);
 
-	if (pFMT->ByteRate != (pFMT->SampleRate * pFMT->NumChannels * pFMT->BitsPerSample/8)) {
-		printf("BYTE RATE CHECK FAILED!\n");
-		exit(6);
-	}
+	if (pFMT->ByteRate != (pFMT->SampleRate * pFMT->NumChannels * pFMT->BitsPerSample/8))
+		exit_error(BYTE_RATE_TEST_FAIL);
 
 	return pFMT;
 }
@@ -183,7 +172,6 @@ print_data_header(data_header_ptr pDataH) {
 	printf("Subchunk2Size: %ld\n", pDataH->Subchunk2Size);
 	return;
 }
-
 
 unsigned long
 get_riff_chunksize(riff_ptr pRIFF) {
