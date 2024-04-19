@@ -1,5 +1,4 @@
 #include "../include/utils.h"
-//#include <stdio.h>
 
 signed long 
 read_little_endian(FILE *file, unsigned char bits) {
