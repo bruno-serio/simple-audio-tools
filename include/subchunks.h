@@ -9,26 +9,6 @@ typedef struct _fmt_subchunk *fmt_ptr;
 typedef struct _data_header *data_header_ptr;
 
 /* Memory allocation and freeing */
-/*
-riff_ptr
-alloc_riff_chunk();
-
-fmt_ptr
-alloc_fmt_subchunk();
-
-data_header_ptr
-alloc_data_header();
-*/
-void
-free_riff_chunk(riff_ptr pRIFF);
-
-void
-free_fmt_subchunk(fmt_ptr pFMT);
-
-void
-free_data_header(data_header_ptr pDataH);
-
-/* Getting parameters from file */
 
 riff_ptr
 get_riff_chunk(FILE *file);
@@ -38,6 +18,16 @@ get_fmt_subchunk(FILE *file);
 
 data_header_ptr
 get_data_header(FILE *file, signed long *start);
+
+void
+free_riff_chunk(riff_ptr pRIFF);
+
+void
+free_fmt_subchunk(fmt_ptr pFMT);
+
+void
+free_data_header(data_header_ptr pDataH);
+
 
 /* Prints and debugs */
 
