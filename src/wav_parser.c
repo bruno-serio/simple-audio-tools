@@ -16,7 +16,7 @@
 int main(int argc, char *argv[]) {
 	char directory[14] = "../wav-files/";
 
-	for (int fileN=1; fileN<argc; fileN++) {
+	for (int fileN=1; fileN<2/*argc*/; fileN++) {
 		char filePath[48];
 		signed long dataStart;
 
@@ -24,8 +24,17 @@ int main(int argc, char *argv[]) {
 		strcpy(filePath, directory);
 		strcat(filePath,argv[fileN]);
 
-	//	FILE *audioFile = fopen("../wav-files/sinewave.wav", "rb");
 		FILE *audioFile = fopen(filePath, "rb");
+
+		if (argc>1) {
+			char fileOut[48];
+			memset(fileOut, '\0', sizeof(fileOut));
+			strcpy(fileOut, "./");
+			strcat(fileOut,argv[fileN+1]);
+			printf("out: %s\n", fileOut);
+			FILE *audioOut = fopen(fileOut, "wb");
+			write_little_endian(audioOut, 65681, 32);
+		}
 
 		riff_ptr RIFF = get_riff_chunk(audioFile);
 		fmt_ptr FMT = get_fmt_subchunk(audioFile);
