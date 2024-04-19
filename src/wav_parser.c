@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
 	for (int fileN=1; fileN<argc; fileN++) {
 		char filePath[48];
-		long dataStart;
+		signed long dataStart;
 
 		memset(filePath, '\0', sizeof(filePath));
 		strcpy(filePath, directory);
@@ -27,23 +27,15 @@ int main(int argc, char *argv[]) {
 	//	FILE *audioFile = fopen("../wav-files/sinewave.wav", "rb");
 		FILE *audioFile = fopen(filePath, "rb");
 
-		riff_ptr RIFF = alloc_riff_chunk();
-		get_riff_chunk(audioFile, RIFF);
-
-		fmt_ptr FMT = alloc_fmt_subchunk();
-		get_fmt_subchunk(audioFile, FMT);
-
-		data_header_ptr dataHeader = alloc_data_header();
-		dataStart = get_data_header(audioFile, dataHeader);
-		printf("%ld", dataStart);
+		riff_ptr RIFF = get_riff_chunk(audioFile);
+		fmt_ptr FMT = get_fmt_subchunk(audioFile);
+		data_header_ptr dataHeader = get_data_header(audioFile, &dataStart);
 
 	//	print_riff_chunk(RIFF);
 	//	print_fmt_subchunk(FMT);
 	//	print_data_header(dataHeader);
-		//get_abs_peak(audioFile);
 
-	//	printf("\n\n");
-		printf("Peak: %d\n", get_abs_peak16(audioFile));
+		printf("Peak: %d\n", get_abs_peak_def(audioFile));
 
 		fclose(audioFile);
 		free_riff_chunk(RIFF);

@@ -69,105 +69,54 @@ free_data_header(data_header_ptr pDataH) {
 
 /* Getting parameters from file */
 
-void
-get_riff_chunk(FILE *file, riff_ptr pRIFF) {
-	unsigned long sizeOut = 0;
-
+riff_ptr
+get_riff_chunk(FILE *file) {
+	riff_ptr pRIFF = alloc_riff_chunk();
 	for (int i=0; i<4; i++) pRIFF->ChunkID[i] = fgetc(file);
-	
-	for (int i=0; i<4; i++) {
-		unsigned char iByteOfSize = fgetc(file);
-		sizeOut += iByteOfSize << (i*8);
-	}
-	
-	pRIFF->ChunkSize = sizeOut;
-
+	pRIFF->ChunkSize = read_little_endian(file, 32);
 	for (int i=0; i<4; i++) pRIFF->Format[i] = fgetc(file);
-
-	return;
+	return pRIFF;
 }
 
-void
-get_fmt_subchunk(FILE *file, fmt_ptr pFMT) {
-	unsigned long sizeOut = 0;
-
+fmt_ptr
+get_fmt_subchunk(FILE *file) {
+	fmt_ptr pFMT = alloc_fmt_subchunk();
 	fseek(file, 12, SEEK_SET);
 
 	// SUBCHUNK1 ID - fmt
 	for (int i=0; i<4; i++) pFMT->Subchunk1ID[i] = fgetc(file);
-
 	// SUBCHUNK1 SIZE
-	for (int i=0; i<4; i++) {
-		unsigned char iByteOfSize = fgetc(file);
-		sizeOut += iByteOfSize << (i*8);
-	}
-	pFMT->Subchunk1Size = sizeOut;
-
+	pFMT->Subchunk1Size = (unsigned long)read_little_endian(file, 32);
 	// AUDIO FORMAT
-	unsigned short tempShort = 0;
-	for (int i=0; i<2; i++) {
-		unsigned char iByte = fgetc(file);
-		tempShort += iByte << (i*8);
-	}
-	pFMT->AudioFormat = tempShort;
-
+	pFMT->AudioFormat = (unsigned short)(read_little_endian(file, 16));
 	// NUM CHANNELS
-	tempShort = 0;
-	for (int i=0; i<2; i++) {
-		unsigned char iByte = fgetc(file);
-		tempShort += iByte << (i*8);
-	}
-	pFMT->NumChannels = tempShort;
-
+	pFMT->NumChannels = (unsigned short)(read_little_endian(file, 16));
 	// SAMPLE RATE
-	sizeOut = 0;
-	for (int i=0; i<4; i++) {
-		unsigned char iByteOfSize = fgetc(file);
-		sizeOut += iByteOfSize << (i*8);
-	}
-	pFMT->SampleRate = sizeOut;
-
+	pFMT->SampleRate = (unsigned long)read_little_endian(file, 32);
 	// BYTE RATE
-	sizeOut = 0;
-	for (int i=0; i<4; i++) {
-		unsigned char iByteOfSize = fgetc(file);
-		sizeOut += iByteOfSize << (i*8);
-	}
-	pFMT->ByteRate = sizeOut;
-
+	pFMT->ByteRate = (unsigned long)read_little_endian(file, 32);
 	// BLOCK ALIGN
-	tempShort = 0;
-	for (int i=0; i<2; i++) {
-		unsigned char iByte = fgetc(file);
-		tempShort += iByte << (i*8);
-	}
-	pFMT->BlockAlign = tempShort;
-
+	pFMT->BlockAlign = (unsigned short)(read_little_endian(file, 16));
 	// BITS PER SAMPLE
-	tempShort = 0;
-	for (int i=0; i<2; i++) {
-		unsigned char iByte = fgetc(file);
-		tempShort += iByte << (i*8);
-	}
-	pFMT->BitsPerSample = tempShort;
+	pFMT->BitsPerSample = (unsigned short)(read_little_endian(file, 16));
 
 	// CHECKS
 	if (pFMT->BlockAlign != (pFMT->NumChannels * pFMT->BitsPerSample/8)) {
-		printf("error 6\n");
-		return;
+		printf("BLOCK ALIGN CHECK FAILED!\n");
+		exit(6);
 	}
 
 	if (pFMT->ByteRate != (pFMT->SampleRate * pFMT->NumChannels * pFMT->BitsPerSample/8)) {
-		printf("error 6\n");
-		return;
+		printf("BYTE RATE CHECK FAILED!\n");
+		exit(6);
 	}
 
-	return;
+	return pFMT;
 }
 
-signed long
-get_data_header(FILE *file, data_header_ptr pDataH) {
-	unsigned long sizeOut = 0;
+data_header_ptr
+get_data_header(FILE *file, signed long *start) {
+	data_header_ptr pDataH = alloc_data_header();
 	signed long dataStart = 35;
 
 	fseek(file, 36, SEEK_SET);
@@ -180,21 +129,18 @@ get_data_header(FILE *file, data_header_ptr pDataH) {
 	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
 	dataStart += 4;
 
-	for (int i=0; i<4; i++) {
-		unsigned char iByteOfSize = fgetc(file);
-		sizeOut += iByteOfSize << (i*8);
-		dataStart++;
-	}
-	
-	pDataH->Subchunk2Size = sizeOut;
+	pDataH->Subchunk2Size = read_little_endian(file, 32);
 
-	return dataStart;
+	if (start != NULL && *start != 0) *start = dataStart;
+	return pDataH;
 }
 
 /* Input and output */
 
 void
 print_riff_chunk(riff_ptr pRIFF) {
+	if (pRIFF == NULL) return;
+
 	printf("---RIFF CHUNK\n");
 	printf("ChunkID: ");
 	for (int i=0; i<4; i++) printf("%c", pRIFF->ChunkID[i]);

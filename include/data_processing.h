@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 
-// pasar en vez de 40 un numero imposible y ahi recorrer el archivo hasta encontrar
-#define get_abs_peak16_def(data) get_abs_peak16((data), 44)
+#define DEF_BITSPERSAMPLE 0
+#define get_abs_peak_def(data) get_abs_peak((data), DEF_BITSPERSAMPLE)
 	
 signed short
-get_abs_peak16(FILE *file);
+get_abs_peak(FILE *file, unsigned short BitsPerSample);
 
 #endif // _DATA_PROCESSING_H_

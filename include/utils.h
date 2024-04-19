@@ -8,4 +8,11 @@
 signed long
 read_little_endian(FILE *file, unsigned char BitsPerSample);
 
+/*
+signed long
+read_sl_little_endian(FILE *file, unsigned char BitsPerSample);
+
+signed long
+read_sl_little_endian(FILE *file, unsigned char BitsPerSample);
+*/
 #endif // _UTILS_H_
