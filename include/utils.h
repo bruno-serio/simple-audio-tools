@@ -6,13 +6,23 @@
 #define read_sample(f, b) read_little_endian(f, b)
 
 signed long
-read_little_endian(FILE *file, unsigned char BitsPerSample);
+read_little_endian(FILE *file, unsigned char bits);
+
+void
+write_little_endian(FILE *fileOut, signed long n, unsigned char bits);
 
 /*
 signed long
-read_sl_little_endian(FILE *file, unsigned char BitsPerSample);
+read_sl_little_endian(FILE *file, unsigned char bits);
 
 signed long
-read_sl_little_endian(FILE *file, unsigned char BitsPerSample);
+read_ul_little_endian(FILE *file, unsigned char bits);
+
+void
+write_sl_little_endian(FILE *fileOut, signed long n, unsigned char bits);
+
+void
+write_ul_little_endian(FILE *fileOut, signed long n, unsigned char bits);
+
 */
 #endif // _UTILS_H_
