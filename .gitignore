@@ -1,7 +1,8 @@
+bin/
+nvim-source/
 obj/
 output/
 test-obj/
-nvim-source/
-wav-files/
 removed/
+wav-files/
 testWavFile.wav
