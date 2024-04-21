@@ -59,4 +59,15 @@ get_bits_per_sample(fmt_ptr pFMT);
 unsigned long
 get_data_size(data_header_ptr pDataH);
 
+/* Writing to file */
+
+void
+write_riff_chunk(FILE *file, riff_ptr RIFF);
+
+void
+write_fmt_subchunk(FILE *file, fmt_ptr FMT);
+
+void
+write_data_header(FILE *file, data_header_ptr DATA);
+
 #endif // _SUBCHUNKS_H_

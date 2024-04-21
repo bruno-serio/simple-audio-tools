@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/subchunks.h"
-#include "../include/data_processing.h"
-#include "../include/utils.h"
-#include "../include/exit_messages.h"
+#include "../headers/subchunks.h"
+#include "../headers/data_processing.h"
+#include "../headers/utils.h"
+#include "../headers/exit_messages.h"
+#include "../headers/file_creation.h"
 // #include <inttypes.h>
 
 // *****
@@ -15,7 +16,6 @@
 // *****
 
 int main(int argc, char *argv[]) {
-	exit_error(7);
 	char directory[14] = "../wav-files/";
 
 	for (int fileN=1; fileN<2/*argc*/; fileN++) {
@@ -29,13 +29,14 @@ int main(int argc, char *argv[]) {
 		FILE *audioFile = fopen(filePath, "rb");
 
 		if (argc>1) {
-			char fileOut[48];
+			create_new_file(argv[fileN+1], NULL, NULL, NULL);	
+			/*char fileOut[48];
 			memset(fileOut, '\0', sizeof(fileOut));
 			strcpy(fileOut, "./");
 			strcat(fileOut,argv[fileN+1]);
 			printf("out: %s\n", fileOut);
 			FILE *audioOut = fopen(fileOut, "wb");
-			write_little_endian(audioOut, 0x5af6130a, 32);
+			write_little_endian(audioOut, 0x5af6130a, 32);*/
 		}
 
 		riff_ptr RIFF = get_riff_chunk(audioFile);

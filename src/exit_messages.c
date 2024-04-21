@@ -1,4 +1,4 @@
-#include "../include/exit_messages.h"
+#include "../headers/exit_messages.h"
 
 void
 exit_error (exit_message_t code) {
@@ -23,11 +23,17 @@ exit_error (exit_message_t code) {
 			printf("Byte Rate test failed.\n");
 			break;
 		
+		case MEM_ALLOC_FAILED:
+			printf("Memory allocation failed.\n");
+			break;
+		
 		case UNEXPECTED_ERROR:
 		default:
 			printf("An unexpected error has ocurred!\n");
+			printf("Exiting with code 1.\n");
+			exit(1);
 			break;
 		}
-	printf("Exiting with code %d\n", code);
+	printf("Exiting with code %d.\n", code);
 	exit(code);
 }

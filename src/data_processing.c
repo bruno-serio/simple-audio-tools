@@ -1,6 +1,6 @@
-#include "../include/subchunks.h"
-#include "../include/data_processing.h"
-#include "../include/utils.h"
+#include "../headers/subchunks.h"
+#include "../headers/data_processing.h"
+#include "../headers/utils.h"
 
 signed short
 get_abs_peak(FILE *file, unsigned short BitsPerSample) {

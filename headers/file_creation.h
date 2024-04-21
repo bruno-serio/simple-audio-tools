@@ -3,10 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "subchunks.h"
+#include "utils.h"
 
-// returns offset for writing data
-signed int
-create_file_from_header(riff_ptr RIFF, fmt_ptr FMT, data_header_ptr DATA);
+FILE*
+create_new_file(const char *fileName, riff_ptr RIFF, fmt_ptr FMT, data_header_ptr DATA);
 
 #endif // _FILE_CREATION_H

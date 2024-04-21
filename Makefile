@@ -1,9 +1,10 @@
 CC=gcc
 CFLAGS=-Wall -Wextra
 
-HDIR=include
+HDIR=headers
 ODIR=obj
 CDIR=src
+BIN=bin
 OUT=output
 
 TODIR=test_obj
@@ -11,7 +12,7 @@ TCDIR=test_src
 
 SRCFILES := $(wildcard $(CDIR)/*.c)
 OBJFILES := $(patsubst $(CDIR)/%.c,$(ODIR)/%.o,$(SRCFILES))
-OUTPUT := $(OUT)/wav_parser
+OUTPUT := $(BIN)/wav_parser
 
 all: $(OUTPUT)
 
@@ -20,7 +21,7 @@ testing_utils:
 	$(CC) $(CFLAGS) -c $(CDIR)/utils.c -o $(ODIR)/utils.o 
 	$(CC) $(CFLAGS) -c $(TCDIR)/testing_utils.c -o $(TODIR)/testing_utils.o
 	@echo Linking
-	$(CC) $(CLFLAGS) $(TODIR)/testing_utils.o $(ODIR)/utils.o -o $(OUT)/utest 
+	$(CC) $(CLFLAGS) $(TODIR)/testing_utils.o $(ODIR)/utils.o -o $(BIN)/utest 
 
 
 # source to obj
@@ -35,4 +36,4 @@ $(OUTPUT): $(OBJFILES)
 
 clean:
 	@echo Cleaning.
-	rm -rf $(ODIR)/* $(OUT)/* $(TODIR)/* 
+	rm -rf $(ODIR)/* $(BIN)/* $(TODIR)/* $(OUT)/*
