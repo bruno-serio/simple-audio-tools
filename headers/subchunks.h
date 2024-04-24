@@ -4,9 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define _INFO_LE 0x4F46449
+
 typedef struct _riff_chunk *riff_ptr;
 typedef struct _fmt_subchunk *fmt_ptr;
 typedef struct _data_header *data_header_ptr;
+typedef struct _metadata_node *metadata_list;
+typedef struct _metadata_head *metadata_head;
 
 /* Memory allocation and freeing */
 
@@ -19,6 +23,9 @@ get_fmt_subchunk(FILE *file);
 data_header_ptr
 get_data_header(FILE *file, signed long *start);
 
+metadata_head
+get_metadata(FILE *file);
+
 void
 free_riff_chunk(riff_ptr pRIFF);
 
@@ -28,6 +35,8 @@ free_fmt_subchunk(fmt_ptr pFMT);
 void
 free_data_header(data_header_ptr pDataH);
 
+void
+free_metadata(metadata_head *head);
 
 /* Prints and debugs */
 
