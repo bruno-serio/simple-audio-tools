@@ -10,6 +10,7 @@ create_new_file(const char *fileName, riff_ptr RIFF, fmt_ptr FMT, data_header_pt
 	write_data_header(newFile, DATA);
 
 	fclose(newFile);
+	free_filepath(filePath);
 	//fopen(, "ab+")
 
 	return NULL;

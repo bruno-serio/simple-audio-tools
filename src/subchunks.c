@@ -111,12 +111,12 @@ get_data_header(FILE *file, signed long *start) {
 
 	pDataH->Subchunk2Size = read_little_endian(file, 32);
 
-	if (start != NULL && *start != 0) *start = dataStart;
+	if (start != NULL) *start = dataStart;
 	return pDataH;
 }
 
 metadata_list
-create_metadata_node(char code[4], unsigned long infoSize) {
+create_metadata_node(char *code, unsigned long infoSize) {
 	metadata_list node = malloc(sizeof(struct _metadata_node));
 	for (int i=0; i<4; i++)
 		node->code[i] = code[i];
@@ -128,16 +128,20 @@ create_metadata_node(char code[4], unsigned long infoSize) {
 }
 
 metadata_list
-append_metadata_list(metadata_list l, metadata_list node) {
-	if (l == NULL) 
+append_metadata_list(metadata_list *l, metadata_list node) {
+	if (l == NULL || *l == NULL) 
 		return node;
 
-	else if (l->R == NULL) {
-		node->L = l;
-		l->R = node;
+	else if ((*l)->R == NULL) {
+		node->L = *l;
+		(*l)->R = node;
 		return node;
-	} else
-		return append_metadata_list(l->R, node);
+	} else {
+		metadata_list dummy = *l;
+		while (dummy->R != NULL)
+			dummy = dummy->R;
+		return append_metadata_list(&dummy, node);
+	}
 }
 
 metadata_head
@@ -155,32 +159,41 @@ get_metadata(FILE *file) {
 	fseek(file, -8, SEEK_END);
 	signed char c = 0;
 	unsigned long id = 0;
+	signed long length = 0;
 
-	for (int maxloop = 0; maxloop < 512 && feof(file) == 0 && id != _INFO_LE; maxloop++) {
-		for (c = fgetc(file); feof(file) == 0 && c != 'O'; fseek(file, -2, SEEK_CUR))
+	for (int maxloop = 0; maxloop < 12 && feof(file) == 0 && id != _INFO_LE; maxloop++) {
+		for (c = fgetc(file); feof(file) == 0 && c != 'O'; fseek(file, -2, SEEK_CUR)) {
 			c = fgetc(file);
-
+			length++;
+		}
 		if (c == 'O') {
-			fseek(file, -4, SEEK_CUR);
+			fseek(file, -2, SEEK_CUR);
 			id = read_little_endian(file, 32);
 		}
 	}
 
 	metadata_list l = NULL;
-
 	if (id == _INFO_LE) {
-		while (feof(file) == 0) {
+		while (feof(file) == 0 && length > 0) {
 			char tagid[4];
-			for (int i=0;i<4;i++)
+			for (int i=0;i<4;i++) {
 				tagid[i] = fgetc(file);
+			}
 			unsigned long infosize = read_little_endian(file, 32);
+			
+			length -= (8 + infosize);
 			metadata_list temp = create_metadata_node(tagid, infosize);
-			l = append_metadata_list(l, temp);
+			l = append_metadata_list(&l, temp);
+			fseek(file, infosize, SEEK_CUR);
 		}
-		// get all separate tags and create the list
 	}
 
 	return create_metadata_head_from_list(l);
+}
+
+metadata_list
+__temp_getlistfromhead(metadata_head h) {
+	return h->listFirst;
 }
 
 void
@@ -207,9 +220,11 @@ free_data_header(data_header_ptr pDataH) {
 void
 free_metadata_list(metadata_list *l) {
 	if (l != NULL) {
-		while (*l != NULL && (*l)->sig != NULL)
-
-
+		while (*l != NULL) {
+			metadata_list rm = *l;
+			*l = (*l)->R;
+			free(rm);
+		}
 	}
 }
 
@@ -280,7 +295,9 @@ print_data_header(data_header_ptr pDataH) {
 void
 print_metadata_list_ids(metadata_list l) {
 	while (l != NULL) {
-		printf("%s", l->code);
+		for (int i=0; i<4; i++)
+			printf("%c",l->code[i]);
+		printf("\n");
 		l = l->R;
 	}
 }

@@ -9,11 +9,17 @@
 signed long
 read_little_endian(FILE *file, unsigned char bits);
 
+signed long
+read_big_endian(FILE *file, unsigned char bits);
+
 void
 write_little_endian(FILE *fileOut, signed long n, unsigned char bits);
 
 const char*
 get_filepath(const char *dir, const char *fileName);
+
+void
+free_filepath(const char *fp);
 
 /*
 signed long

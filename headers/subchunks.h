@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define _INFO_LE 0x4F46449
+#define _INFO_LE 0x4F464E49
 
 typedef struct _riff_chunk *riff_ptr;
 typedef struct _fmt_subchunk *fmt_ptr;
@@ -25,6 +25,9 @@ get_data_header(FILE *file, signed long *start);
 
 metadata_head
 get_metadata(FILE *file);
+
+metadata_list
+__temp_getlistfromhead(metadata_head h);
 
 void
 free_riff_chunk(riff_ptr pRIFF);
@@ -48,6 +51,9 @@ print_fmt_subchunk(fmt_ptr pFMT);
 
 void
 print_data_header(data_header_ptr pDataH);
+
+void
+print_metadata_list_ids(metadata_list l);
 
 /* Input and output */
 

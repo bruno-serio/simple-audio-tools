@@ -42,10 +42,12 @@ int main(int argc, char *argv[]) {
 		riff_ptr RIFF = get_riff_chunk(audioFile);
 		fmt_ptr FMT = get_fmt_subchunk(audioFile);
 		data_header_ptr dataHeader = get_data_header(audioFile, &dataStart);
+		metadata_head mdhead = get_metadata(audioFile);
 
 	//	print_riff_chunk(RIFF);
 	//	print_fmt_subchunk(FMT);
 	//	print_data_header(dataHeader);
+		print_metadata_list_ids(__temp_getlistfromhead(mdhead));
 
 		printf("Peak: %d\n", get_abs_peak_def(audioFile));
 
@@ -53,6 +55,7 @@ int main(int argc, char *argv[]) {
 		free_riff_chunk(RIFF);
 		free_fmt_subchunk(FMT);	
 		free_data_header(dataHeader);
+		free_metadata(&mdhead);
 	}
 
 	return 0;
