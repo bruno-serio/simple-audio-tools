@@ -2,11 +2,11 @@
 #include "../headers/data_processing.h"
 #include "../headers/utils.h"
 
-signed short
-get_abs_peak(FILE *file, unsigned short BitsPerSample) {
-	signed short max = 0;
-	signed short min = 0;
-	signed long start = 0; 
+int16_t
+get_abs_peak(FILE *file, uint16_t BitsPerSample) {
+	int16_t max = 0;
+	int16_t min = 0;
+	int32_t start = 0; 
 
 	fmt_ptr FMT = get_fmt_subchunk(file);
 	data_header_ptr DATA = get_data_header(file, &start);
@@ -15,8 +15,8 @@ get_abs_peak(FILE *file, unsigned short BitsPerSample) {
 
 	fseek(file, start, SEEK_SET);
 
-	for (unsigned long i=0;i<sampleCount;i++) {
-		signed short sample = (signed short)read_sample(file, BitsPerSample);
+	for (uint32_t i=0;i<sampleCount;i++) {
+		int16_t sample = (int16_t)read_sample(file, BitsPerSample);
 		if (sample > max) max = sample;
 		if (sample < min) min = sample;
 	}

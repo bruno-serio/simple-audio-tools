@@ -83,4 +83,9 @@ write_fmt_subchunk(FILE *file, fmt_ptr FMT);
 void
 write_data_header(FILE *file, data_header_ptr DATA);
 
+/* Editing existing files */
+
+void
+remove_all_metadata(FILE *file, const char *filepath, metadata_head h);
+
 #endif // _SUBCHUNKS_H_

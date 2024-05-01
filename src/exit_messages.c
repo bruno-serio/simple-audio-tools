@@ -28,6 +28,14 @@ exit_error (exit_message_t code) {
 			printf("Memory allocation failed.\n");
 			break;
 		
+		case COULDNT_REMOVE_FILE:
+			printf("Couldn't remove file.\n");
+			break;
+	
+		case COULDNT_RENAME_FILE:
+			printf("Couldn't rename file.\n");
+			break;
+
 		case UNEXPECTED_ERROR:
 		default:
 			printf("An unexpected error has ocurred!\n");

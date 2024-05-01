@@ -339,6 +339,8 @@ get_data_size(data_header_ptr pDataH) {
 	return pDataH->Subchunk2Size;
 }
 
+/* Writing to file */
+
 void
 write_riff_chunk(FILE *file, riff_ptr RIFF) {
 	fseek(file, 0, SEEK_SET);
@@ -384,4 +386,57 @@ write_data_header(FILE *file, data_header_ptr DATA) {
 		fputc(tmpstr[i], file);
 
 	write_little_endian(file, (uint32_t)(DATA!=NULL) ? DATA->Subchunk2Size : 0, 32);
+}
+
+static int32_t
+copy_header(FILE *source, FILE *destination, int32_t *datasize) {
+	int32_t offset = 0;
+
+	riff_ptr riff = get_riff_chunk(source);
+	fmt_ptr fmt = get_fmt_subchunk(source);
+	data_header_ptr datahead = get_data_header(source, &offset);
+	
+	write_riff_chunk(destination, riff);
+	write_fmt_subchunk(destination, fmt);
+	write_data_header(destination, datahead);
+
+	free_riff_chunk(riff);
+	free_fmt_subchunk(fmt);
+	free_data_header(datahead);
+
+	if (datasize != NULL)
+		*datasize = datahead->Subchunk2Size;
+
+	return offset;
+}
+
+/* Editing existing files */
+
+void
+remove_all_metadata(FILE *file, const char *filepath, metadata_head h) {
+	if (h == NULL) 
+		h = get_metadata(file);
+	
+	char *temppath = "temp_file_removing_metadata.temp";
+	FILE *tempF = fopen(temppath, "wb");
+
+	int32_t datasize = 0;
+	int32_t offset = copy_header(file, tempF, &datasize);
+
+	fseek(file, offset, SEEK_SET);	
+	fseek(tempF, offset, SEEK_SET);
+
+	for (int i=0; i<datasize; i++)
+		fputc(fgetc(file), tempF);
+
+	fclose(file);
+	free_metadata(&h);
+
+	if (remove(filepath) != 0)
+		exit_error(COULDNT_REMOVE_FILE);
+
+	if (rename(temppath, filepath) != 0)
+		exit_error(COULDNT_RENAME_FILE);
+
+	fclose(tempF);
 }
