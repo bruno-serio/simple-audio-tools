@@ -33,7 +33,8 @@ struct _metadata_node {
 };
 
 struct _metadata_head {
-	unsigned short tagsAmount;
+	uint16_t tagsAmount;
+	uint32_t metadataSize;
 	struct _metadata_node *listFirst;
 	struct _metadata_node *listLast;
 };
@@ -147,9 +148,15 @@ append_metadata_list(metadata_list *l, metadata_list node) {
 metadata_head
 create_metadata_head_from_list(metadata_list l) {
 	metadata_head h = malloc(sizeof(struct _metadata_head));
+
+	h->metadataSize = 0;
 	h->listFirst = l;
-	while (l != NULL && l->R != NULL)
+
+	while (l != NULL && l->R != NULL) {
+		h->metadataSize += 16 + l->infoSize;
 		l = l->R;
+	}
+	h->metadataSize += 16 + l->infoSize;
 	h->listLast = l;
 	return h;
 }
@@ -194,11 +201,6 @@ get_metadata(FILE *file) {
 	}
 
 	return create_metadata_head_from_list(l);
-}
-
-metadata_list
-__temp_getlistfromhead(metadata_head h) {
-	return h->listFirst;
 }
 
 void
@@ -299,12 +301,16 @@ print_data_header(data_header_ptr pDataH) {
 }
 
 void
-print_metadata_list_ids(metadata_list l) {
-	while (l != NULL) {
-		for (int i=0; i<4; i++)
-			printf("%c",l->code[i]);
-		printf(": %s\n", l->info);
-		l = l->R;
+print_metadata(metadata_head h) {
+	if (h != NULL) {
+		printf("Metadata size: %" PRIu32 "\n", h->metadataSize);
+		metadata_list l = h->listFirst;
+		while (l != NULL) {
+			for (int i=0; i<4; i++)
+				printf("%c",l->code[i]);
+			printf(": %s\n", l->info);
+			l = l->R;
+		}
 	}
 }
 

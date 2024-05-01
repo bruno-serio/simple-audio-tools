@@ -27,9 +27,6 @@ get_data_header(FILE *file, int32_t *start);
 metadata_head
 get_metadata(FILE *file);
 
-metadata_list
-__temp_getlistfromhead(metadata_head h);
-
 void
 free_riff_chunk(riff_ptr pRIFF);
 
@@ -54,7 +51,7 @@ void
 print_data_header(data_header_ptr pDataH);
 
 void
-print_metadata_list_ids(metadata_list l);
+print_metadata(metadata_head h);
 
 /* Input and output */
 

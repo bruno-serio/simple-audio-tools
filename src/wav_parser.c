@@ -8,7 +8,6 @@
 #include "../headers/utils.h"
 #include "../headers/exit_messages.h"
 #include "../headers/file_creation.h"
-// #include <inttypes.h>
 
 // *****
 
@@ -48,7 +47,7 @@ int main(int argc, char *argv[]) {
 	//	print_riff_chunk(RIFF);
 	//	print_fmt_subchunk(FMT);
 	//	print_data_header(dataHeader);
-		print_metadata_list_ids(__temp_getlistfromhead(mdhead));
+		print_metadata(mdhead);
 
 		printf("Peak: %d\n", get_abs_peak_def(audioFile));
 
