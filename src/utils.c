@@ -1,32 +1,32 @@
 #include "../headers/utils.h"
 #include "../headers/exit_messages.h"
 
-signed long 
-read_little_endian(FILE *file, unsigned char bits) {
+int32_t
+read_little_endian(FILE *file, uint8_t bits) {
 	if (bits % 8 != 0)
 		exit_error(NOT_8_BIT_MULT);
-	signed long sample = 0;
+	int32_t sample = 0;
 	for (int i=0; i<bits/8; i++)
-		sample += ((unsigned char)fgetc(file) << (8*i));
+		sample += ((uint8_t)fgetc(file) << (8*i));
 
 	return sample;
 }
 
-signed long 
-read_big_endian(FILE *file, unsigned char bits) {
+int32_t
+read_big_endian(FILE *file, uint8_t bits) {
 	if (bits % 8 != 0)
 		exit_error(NOT_8_BIT_MULT);
-	char n[bits/8];
+	int8_t n[bits/8];
 	for (int i=0; i<bits/8; i++)
 		n[i] = fgetc(file);
-	signed long sample = 0; 
+	int32_t sample = 0; 
 	for (int i=0; i<bits/8; i++) 
 		sample += (n[i] << 8*(bits/8 - i - 1));
 
 	return sample;
 }
 void
-write_little_endian(FILE *fileOut, signed long n, unsigned char bits) {
+write_little_endian(FILE *fileOut, signed long n, uint8_t bits) {
 	if (fileOut == NULL)
 		exit_error(PASSED_NULL_POINTER);
 	if (bits % 8 != 0)

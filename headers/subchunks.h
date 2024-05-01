@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #define _INFO_LE 0x4F464E49
 
@@ -21,7 +22,7 @@ fmt_ptr
 get_fmt_subchunk(FILE *file);
 
 data_header_ptr
-get_data_header(FILE *file, signed long *start);
+get_data_header(FILE *file, int32_t *start);
 
 metadata_head
 get_metadata(FILE *file);
@@ -57,21 +58,21 @@ print_metadata_list_ids(metadata_list l);
 
 /* Input and output */
 
-unsigned long
+uint32_t
 get_riff_chunksize(riff_ptr pRIFF);
 
-unsigned long
+uint32_t
 get_sample_rate(fmt_ptr pFMT);
 
-unsigned long
+uint32_t
 get_byte_rate(fmt_ptr pFMT);
 
-unsigned short
+uint16_t
 get_bits_per_sample(fmt_ptr pFMT);
 
 // Returns the number of bytes in the data subchunk that follow this number
 //  = NumSamples * NumChannels * BitsPerSample/8
-unsigned long
+uint32_t
 get_data_size(data_header_ptr pDataH);
 
 /* Writing to file */

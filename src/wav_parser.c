@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "../headers/subchunks.h"
 #include "../headers/data_processing.h"
@@ -20,7 +21,7 @@ int main(int argc, char *argv[]) {
 
 	for (int fileN=1; fileN<2/*argc*/; fileN++) {
 		char filePath[48];
-		signed long dataStart;
+		int32_t dataStart;
 
 		memset(filePath, '\0', sizeof(filePath));
 		strcpy(filePath, directory);
