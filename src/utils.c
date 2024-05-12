@@ -26,7 +26,7 @@ read_big_endian(FILE *file, uint8_t bits) {
 	return sample;
 }
 void
-write_little_endian(FILE *fileOut, signed long n, uint8_t bits) {
+write_little_endian(FILE *fileOut, int32_t n, uint8_t bits) {
 	if (fileOut == NULL)
 		exit_error(PASSED_NULL_POINTER);
 	if (bits % 8 != 0)

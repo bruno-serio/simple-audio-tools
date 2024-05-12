@@ -10,7 +10,7 @@ get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 
 	fmt_ptr FMT = get_fmt_subchunk(file);
 	data_header_ptr DATA = get_data_header(file, &start);
-	unsigned long sampleCount = get_data_size(DATA);
+	uint32_t sampleCount = get_data_size(DATA);
 	if (BitsPerSample == DEF_BITSPERSAMPLE) BitsPerSample = get_bits_per_sample(FMT);
 
 	fseek(file, start, SEEK_SET);

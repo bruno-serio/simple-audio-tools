@@ -14,7 +14,7 @@ int32_t
 read_big_endian(FILE *file, uint8_t bits);
 
 void
-write_little_endian(FILE *fileOut, signed long n, uint8_t bits);
+write_little_endian(FILE *fileOut, int32_t n, uint8_t bits);
 
 const char*
 get_filepath(const char *dir, const char *fileName);

@@ -18,7 +18,7 @@
 int main(int argc, char *argv[]) {
 	char directory[14] = "../wav-files/";
 
-	for (int fileN=1; fileN<2/*argc*/; fileN++) {
+	for (int fileN=1; fileN<2; fileN++) { // argc in place of 2
 		char filePath[48];
 		int32_t dataStart;
 
@@ -27,37 +27,34 @@ int main(int argc, char *argv[]) {
 		strcat(filePath,argv[fileN]);
 
 		FILE *audioFile = fopen(filePath, "rb");
-
-		if (argc>1) {
-			create_new_file(argv[fileN+1], NULL, NULL, NULL);	
-			/*char fileOut[48];
-			memset(fileOut, '\0', sizeof(fileOut));
-			strcpy(fileOut, "./");
-			strcat(fileOut,argv[fileN+1]);
-			printf("out: %s\n", fileOut);
-			FILE *audioOut = fopen(fileOut, "wb");
-			write_little_endian(audioOut, 0x5af6130a, 32);*/
-		}
-
+		FILE *newFile = NULL;
+	
 		riff_ptr RIFF = get_riff_chunk(audioFile);
+		print_riff_chunk(RIFF);
 		fmt_ptr FMT = get_fmt_subchunk(audioFile);
+		print_fmt_subchunk(FMT);
 		data_header_ptr dataHeader = get_data_header(audioFile, &dataStart);
+		print_data_header(dataHeader);
 		metadata_head mdhead = get_metadata(audioFile);
 
-	//	print_riff_chunk(RIFF);
-	//	print_fmt_subchunk(FMT);
-	//	print_data_header(dataHeader);
+
+		if (argc>1) {
+			newFile = create_new_file(argv[fileN+1], RIFF, FMT);
+			copy_audio_data(audioFile, newFile);
+		}
+
 		print_metadata(mdhead);
 
 		printf("Peak: %d\n", get_abs_peak_def(audioFile));
 
 		fclose(audioFile);
+		fclose(newFile);
 		free_riff_chunk(RIFF);
 		free_fmt_subchunk(FMT);	
 		free_data_header(dataHeader);
-		free_metadata(&mdhead);
+		if (mdhead != NULL)
+			free_metadata(&mdhead);
 	}
-
 	return 0;
 }
 

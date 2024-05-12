@@ -145,7 +145,7 @@ append_metadata_list(metadata_list *l, metadata_list node) {
 	}
 }
 
-metadata_head
+static metadata_head
 create_metadata_head_from_list(metadata_list l) {
 	metadata_head h = malloc(sizeof(struct _metadata_head));
 
@@ -156,8 +156,10 @@ create_metadata_head_from_list(metadata_list l) {
 		h->metadataSize += 16 + l->infoSize;
 		l = l->R;
 	}
+
 	h->metadataSize += 16 + l->infoSize;
 	h->listLast = l;
+
 	return h;
 }
 
@@ -200,7 +202,7 @@ get_metadata(FILE *file) {
 		}
 	}
 
-	return create_metadata_head_from_list(l);
+	return (l != NULL) ? create_metadata_head_from_list(l) : NULL;
 }
 
 void
@@ -378,14 +380,15 @@ write_fmt_subchunk(FILE *file, fmt_ptr FMT) {
 }
 
 void
-write_data_header(FILE *file, data_header_ptr DATA) {
+write_def_data_header(FILE *file) {
 	fseek(file, 36, SEEK_SET);
 
 	char *tmpstr = "data";
 	for (int i=0; i<4; i++)
 		fputc(tmpstr[i], file);
 
-	write_little_endian(file, (uint32_t)(DATA!=NULL) ? DATA->Subchunk2Size : 0, 32);
+	// don't write the size before the data
+	//write_little_endian(file, (uint32_t)(DATA!=NULL) ? DATA->Subchunk2Size : 0, 32);
 }
 
 static int32_t
@@ -398,7 +401,7 @@ copy_header(FILE *source, FILE *destination, int32_t *datasize) {
 	
 	write_riff_chunk(destination, riff);
 	write_fmt_subchunk(destination, fmt);
-	write_data_header(destination, datahead);
+	write_def_data_header(destination);
 
 	free_riff_chunk(riff);
 	free_fmt_subchunk(fmt);
@@ -413,10 +416,7 @@ copy_header(FILE *source, FILE *destination, int32_t *datasize) {
 /* Editing existing files */
 
 void
-remove_all_metadata(FILE *file, const char *filepath, metadata_head h) {
-	if (h == NULL) 
-		h = get_metadata(file);
-	
+remove_all_metadata(FILE *file, const char *filepath) {
 	char *temppath = "temp_file_removing_metadata.temp";
 	FILE *tempF = fopen(temppath, "wb");
 
@@ -430,7 +430,6 @@ remove_all_metadata(FILE *file, const char *filepath, metadata_head h) {
 		fputc(fgetc(file), tempF);
 
 	fclose(file);
-	free_metadata(&h);
 
 	if (remove(filepath) != 0)
 		exit_error(COULDNT_REMOVE_FILE);
