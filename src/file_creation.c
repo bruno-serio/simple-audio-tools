@@ -1,27 +1,33 @@
 #include "../headers/file_creation.h"
 
 FILE*
-create_new_file(const char *fileName, riff_ptr RIFF, fmt_ptr FMT) {
+write_file(const char* filename, riff_t r, fmt_t fmt, data_t d, metadata_t m) {
+	const char *path = get_filepath("../output/", filename);
+	FILE *newfile = fopen(path, "wb+");
+	free_filepath(path);
+
+	write_riff(newfile, r);
+	write_fmt(newfile, fmt);
+	write_data(newfile, d);
+	write_metadata(newfile, m);
+
+	return newfile;
+}
+/*
+FILE* create_new_file(const char *fileName, riff_t r, fmt_t fmt) {
 	const char *filePath = get_filepath("../output/", fileName);
 	FILE *newFile = fopen(filePath, "wb+");
-
-	write_riff_chunk(newFile, RIFF);
-	write_fmt_subchunk(newFile, FMT);
-	write_def_data_header(newFile);
-
 	free_filepath(filePath);
-	//fopen(, "ab+")
-
 	return newFile;
 }
 
 void
 copy_audio_data(FILE *source, FILE *dest) {
 	int32_t start = 0;
-	fmt_ptr FMT = get_fmt_subchunk(source);
-	data_header_ptr DATA = get_data_header(source, &start);
-	uint32_t sampleCount = get_data_size(DATA);
-	uint16_t BitsPerSample = get_bits_per_sample(FMT);		
+	fmt_t fmt = get_fmt_subchunk(source);
+	data_t DATA = get_data_header(source, &start);
+	uint32_t sampleCount = audio_size(DATA);
+	uint16_t BitsPerSample = bits_per_sample(fmt);		
 
 	fseek(source, start, SEEK_SET);
 	fseek(dest, 0, SEEK_END);
@@ -33,3 +39,4 @@ copy_audio_data(FILE *source, FILE *dest) {
 		write_little_endian(dest, sample, BitsPerSample);
 	}
 }
+*/

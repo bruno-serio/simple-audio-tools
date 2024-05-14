@@ -8,10 +8,10 @@ get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 	int16_t min = 0;
 	int32_t start = 0; 
 
-	fmt_ptr FMT = get_fmt_subchunk(file);
-	data_header_ptr DATA = get_data_header(file, &start);
-	uint32_t sampleCount = get_data_size(DATA);
-	if (BitsPerSample == DEF_BITSPERSAMPLE) BitsPerSample = get_bits_per_sample(FMT);
+	fmt_t fmt = get_fmt_subchunk(file);
+	data_t d = get_data_header(file, &start);
+	uint32_t sampleCount = audio_size(d);
+	if (BitsPerSample == DEF_BITSPERSAMPLE) BitsPerSample = bits_per_sample(fmt);
 
 	fseek(file, start, SEEK_SET);
 
@@ -21,7 +21,7 @@ get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 		if (sample < min) min = sample;
 	}
 
-	free_fmt_subchunk(FMT);
-	free_data_header(DATA);
+	free_fmt_subchunk(fmt);
+	free_data_header(d);
 	return ((max >= (-min)) ? max : -(min+1));
 }

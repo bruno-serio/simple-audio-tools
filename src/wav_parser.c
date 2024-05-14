@@ -29,18 +29,18 @@ int main(int argc, char *argv[]) {
 		FILE *audioFile = fopen(filePath, "rb");
 		FILE *newFile = NULL;
 	
-		riff_ptr RIFF = get_riff_chunk(audioFile);
+		riff_t RIFF = get_riff_chunk(audioFile);
 		print_riff_chunk(RIFF);
-		fmt_ptr FMT = get_fmt_subchunk(audioFile);
+		fmt_t FMT = get_fmt_subchunk(audioFile);
 		print_fmt_subchunk(FMT);
-		data_header_ptr dataHeader = get_data_header(audioFile, &dataStart);
+		data_t dataHeader = get_data_header(audioFile, &dataStart);
 		print_data_header(dataHeader);
-		metadata_head mdhead = get_metadata(audioFile);
+		metadata_t mdhead = get_metadata(audioFile);
 
 
 		if (argc>1) {
-			newFile = create_new_file(argv[fileN+1], RIFF, FMT);
-			copy_audio_data(audioFile, newFile);
+			// newFile = create_new_file(argv[fileN+1], RIFF, FMT);
+			// copy_audio_data(audioFile, newFile);
 		}
 
 		print_metadata(mdhead);

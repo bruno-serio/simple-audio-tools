@@ -7,20 +7,13 @@
 
 #define read_sample(f, b) read_little_endian(f, b)
 
-int32_t
-read_little_endian(FILE *file, uint8_t bits);
+int32_t read_little_endian(FILE *file, uint8_t bits);
+int32_t read_big_endian(FILE *file, uint8_t bits);
 
-int32_t
-read_big_endian(FILE *file, uint8_t bits);
+void write_little_endian(FILE *fileOut, int32_t n, uint8_t bits);
 
-void
-write_little_endian(FILE *fileOut, int32_t n, uint8_t bits);
-
-const char*
-get_filepath(const char *dir, const char *fileName);
-
-void
-free_filepath(const char *fp);
+const char* get_filepath(const char *dir, const char *fileName);
+void free_filepath(const char *fp);
 
 /*
 signed long

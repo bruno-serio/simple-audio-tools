@@ -17,7 +17,6 @@ enum EXIT {
 
 typedef enum EXIT exit_message_t;
 
-void
-exit_error (exit_message_t code);
+void exit_error (exit_message_t code);
 
 #endif // _EXIT_MESSAGES_H_

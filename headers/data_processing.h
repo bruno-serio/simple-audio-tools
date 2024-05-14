@@ -6,7 +6,6 @@
 #define DEF_BITSPERSAMPLE 0
 #define get_abs_peak_def(data) get_abs_peak((data), DEF_BITSPERSAMPLE)
 	
-signed short
-get_abs_peak(FILE *file, unsigned short BitsPerSample);
+int16_t get_abs_peak(FILE *file, uint16_t BitsPerSample);
 
 #endif // _DATA_PROCESSING_H_

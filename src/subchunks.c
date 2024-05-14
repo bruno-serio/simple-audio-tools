@@ -2,9 +2,12 @@
 #include "../headers/utils.h"
 #include "../headers/exit_messages.h"
 
+typedef struct _metadata_node *metadata_list;
+
 struct _riff_chunk {
 	char ChunkID[4];
-	uint32_t ChunkSize;
+	uint32_t ChunkSize; //  This is the size of the entire file in bytes minus 8 bytes for
+			    //  the two fields not included in this count: ChunkID and ChunkSize.
 	char Format[4];
 };
 
@@ -41,82 +44,83 @@ struct _metadata_head {
 
 /* Memory allocation and freeing */
 
-static riff_ptr
+static riff_t
 alloc_riff_chunk() {
-	riff_ptr riff = NULL;
+	riff_t riff = NULL;
 	riff = malloc(sizeof(struct _riff_chunk));
 	return riff;
 }
 
-static fmt_ptr
+static fmt_t
 alloc_fmt_subchunk() {
-	fmt_ptr fmt = NULL;
+	fmt_t fmt = NULL;
 	fmt = malloc(sizeof(struct _fmt_subchunk));
 	return fmt;
 }
 
-static data_header_ptr
+static data_t
 alloc_data_header() {
-	data_header_ptr pDataH = NULL;
-	pDataH = malloc(sizeof(struct _data_header));
-	return pDataH;
+	data_t d = NULL;
+	d = malloc(sizeof(struct _data_header));
+	return d;
 }
 
-riff_ptr
+riff_t
 get_riff_chunk(FILE *file) {
-	riff_ptr pRIFF = alloc_riff_chunk();
-	for (int i=0; i<4; i++) pRIFF->ChunkID[i] = fgetc(file);
-	pRIFF->ChunkSize = read_little_endian(file, 32);
-	for (int i=0; i<4; i++) pRIFF->Format[i] = fgetc(file);
-	return pRIFF;
+	riff_t r = alloc_riff_chunk();
+	for (int i=0; i<4; i++) r->ChunkID[i] = fgetc(file);
+	r->ChunkSize = read_little_endian(file, 32);
+	for (int i=0; i<4; i++) r->Format[i] = fgetc(file);
+	return r;
 }
 
-fmt_ptr
+fmt_t
 get_fmt_subchunk(FILE *file) {
-	fmt_ptr pFMT = alloc_fmt_subchunk();
+	fmt_t fmt = alloc_fmt_subchunk();
 	fseek(file, 12, SEEK_SET);
 
-	for (int i=0; i<4; i++) pFMT->Subchunk1ID[i] = fgetc(file);
-	pFMT->Subchunk1Size = (uint32_t)read_little_endian(file, 32);
-	pFMT->AudioFormat = (uint16_t)(read_little_endian(file, 16));
-	pFMT->NumChannels = (uint16_t)(read_little_endian(file, 16));
-	pFMT->SampleRate = (uint32_t)read_little_endian(file, 32);
-	pFMT->ByteRate = (uint32_t)read_little_endian(file, 32);
-	pFMT->BlockAlign = (uint16_t)(read_little_endian(file, 16));
-	pFMT->BitsPerSample = (uint16_t)(read_little_endian(file, 16));
+	for (int i=0; i<4; i++) fmt->Subchunk1ID[i] = fgetc(file);
+
+	fmt->Subchunk1Size = (uint32_t)read_little_endian(file, 32);
+	fmt->AudioFormat = (uint16_t)(read_little_endian(file, 16));
+	fmt->NumChannels = (uint16_t)(read_little_endian(file, 16));
+	fmt->SampleRate = (uint32_t)read_little_endian(file, 32);
+	fmt->ByteRate = (uint32_t)read_little_endian(file, 32);
+	fmt->BlockAlign = (uint16_t)(read_little_endian(file, 16));
+	fmt->BitsPerSample = (uint16_t)(read_little_endian(file, 16));
 
 	// CHECKS
-	if (pFMT->BlockAlign != (pFMT->NumChannels * pFMT->BitsPerSample/8))
+	if (fmt->BlockAlign != (fmt->NumChannels * fmt->BitsPerSample/8))
 		exit_error(BLOCK_ALIGN_TEST_FAIL);
 
-	if (pFMT->ByteRate != (pFMT->SampleRate * pFMT->NumChannels * pFMT->BitsPerSample/8))
+	if (fmt->ByteRate != (fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8))
 		exit_error(BYTE_RATE_TEST_FAIL);
 
-	return pFMT;
+	return fmt;
 }
 
-data_header_ptr
+data_t
 get_data_header(FILE *file, int32_t *start) {
-	data_header_ptr pDataH = alloc_data_header();
+	data_t d = alloc_data_header();
 	int32_t dataStart = 35;
 
 	fseek(file, 36, SEEK_SET);
 
 	do {
 		dataStart++;
-		pDataH->Subchunk2ID[0] = fgetc(file);
-	} while (pDataH->Subchunk2ID[0] != 'd');
+		d->Subchunk2ID[0] = fgetc(file);
+	} while (d->Subchunk2ID[0] != 'd');
 
-	for (int i=1; i<4; i++) pDataH->Subchunk2ID[i] = fgetc(file);
+	for (int i=1; i<4; i++) d->Subchunk2ID[i] = fgetc(file);
 	dataStart += 4;
 
-	pDataH->Subchunk2Size = read_little_endian(file, 32);
+	d->Subchunk2Size = read_little_endian(file, 32);
 
 	if (start != NULL) *start = dataStart;
-	return pDataH;
+	return d;
 }
 
-metadata_list
+static metadata_list
 create_metadata_node(char *code, uint32_t infoSize, char *info) {
 	metadata_list node = malloc(sizeof(struct _metadata_node));
 	for (int i=0; i<4; i++)
@@ -128,7 +132,7 @@ create_metadata_node(char *code, uint32_t infoSize, char *info) {
 	return node;
 }
 
-metadata_list
+static metadata_list
 append_metadata_list(metadata_list *l, metadata_list node) {
 	if (l == NULL || *l == NULL) 
 		return node;
@@ -145,9 +149,9 @@ append_metadata_list(metadata_list *l, metadata_list node) {
 	}
 }
 
-static metadata_head
+static metadata_t
 create_metadata_head_from_list(metadata_list l) {
-	metadata_head h = malloc(sizeof(struct _metadata_head));
+	metadata_t h = malloc(sizeof(struct _metadata_head));
 
 	h->metadataSize = 0;
 	h->listFirst = l;
@@ -163,7 +167,7 @@ create_metadata_head_from_list(metadata_list l) {
 	return h;
 }
 
-metadata_head
+metadata_t
 get_metadata(FILE *file) {
 	fseek(file, -8, SEEK_END);
 	signed char c = 0;
@@ -206,27 +210,27 @@ get_metadata(FILE *file) {
 }
 
 void
-free_riff_chunk(riff_ptr pRIFF) {
-	free(pRIFF);
-	pRIFF = NULL;
+free_riff_chunk(riff_t r) {
+	free(r);
+	r = NULL;
 	return;
 }
 
 void
-free_fmt_subchunk(fmt_ptr pFMT) {
-	free(pFMT);
-	pFMT = NULL;
+free_fmt_subchunk(fmt_t fmt) {
+	free(fmt);
+	fmt = NULL;
 	return;
 }
 
 void
-free_data_header(data_header_ptr pDataH) {
-	free(pDataH);
-	pDataH = NULL;
+free_data_header(data_t d) {
+	free(d);
+	d = NULL;
 	return;
 }
 
-void
+static void
 free_metadata_list(metadata_list *l) {
 	if (l != NULL) {
 		while (*l != NULL) {
@@ -239,71 +243,71 @@ free_metadata_list(metadata_list *l) {
 }
 
 void
-free_metadata(metadata_head *head) {
-	if (head != NULL) {
-		free_metadata_list(&((*head)->listFirst));
-		free(*head);
+free_metadata(metadata_t *m) {
+	if (m != NULL) {
+		free_metadata_list(&((*m)->listFirst));
+		free(*m);
 	}
 }
 
 /* Input and output */
 
 void
-print_riff_chunk(riff_ptr pRIFF) {
-	if (pRIFF == NULL) 
+print_riff_chunk(riff_t r) {
+	if (r == NULL) 
 		return;
 
 	printf("---RIFF CHUNK\n");
 	printf("ChunkID: ");
-	for (int i=0; i<4; i++) printf("%c", pRIFF->ChunkID[i]);
+	for (int i=0; i<4; i++) printf("%c", r->ChunkID[i]);
 	printf("\n");
 
-	printf("ChunkSize: %" PRIu32 "\n", pRIFF->ChunkSize);
+	printf("ChunkSize: %" PRIu32 "\n", r->ChunkSize);
 
 	printf("Format: ");
-	for (int i=0; i<4; i++) printf("%c", pRIFF->Format[i]);
+	for (int i=0; i<4; i++) printf("%c", r->Format[i]);
 	printf("\n");
 
 	return;
 }
 
 void
-print_fmt_subchunk(fmt_ptr pFMT) {
-	if (pFMT == NULL)
+print_fmt_subchunk(fmt_t fmt) {
+	if (fmt == NULL)
 		return;
 
 	printf("---FMT SUBCHUNK\n");
 	printf("Subchunk1ID: ");
-	for (int i=0; i<4; i++) printf("%c", pFMT->Subchunk1ID[i]);
+	for (int i=0; i<4; i++) printf("%c", fmt->Subchunk1ID[i]);
 	printf("\n");
 
-	printf("Subchunk1Size %" PRIu32 "\n", pFMT->Subchunk1Size);
-	printf("AudioFormat %" PRIu16 "\n", pFMT->AudioFormat);
-	printf("NumChannels %" PRIu16 "\n", pFMT->NumChannels);
-	printf("SampleRate %" PRIu32 "\n", pFMT->SampleRate);
-	printf("ByteRate %" PRIu32 "\n", pFMT->ByteRate);
-	printf("BlockAlign %" PRIu16 "\n", pFMT->BlockAlign);
-	printf("BitsPerSample %" PRIu16 "\n", pFMT->BitsPerSample);
+	printf("Subchunk1Size %" PRIu32 "\n", fmt->Subchunk1Size);
+	printf("AudioFormat %" PRIu16 "\n", fmt->AudioFormat);
+	printf("NumChannels %" PRIu16 "\n", fmt->NumChannels);
+	printf("SampleRate %" PRIu32 "\n", fmt->SampleRate);
+	printf("ByteRate %" PRIu32 "\n", fmt->ByteRate);
+	printf("BlockAlign %" PRIu16 "\n", fmt->BlockAlign);
+	printf("BitsPerSample %" PRIu16 "\n", fmt->BitsPerSample);
 	return;
 }
 
 void
-print_data_header(data_header_ptr pDataH) {
-	if (pDataH == NULL)
+print_data_header(data_t d) {
+	if (d == NULL)
 		return;
 
 	printf("---DATA HEADER\n");
 
 	printf("Subchunk2ID: ");
-	for (int i=0; i<4; i++) printf("%c", pDataH->Subchunk2ID[i]);
+	for (int i=0; i<4; i++) printf("%c", d->Subchunk2ID[i]);
 	printf("\n");
 
-	printf("Subchunk2Size: %" PRIu32 "\n", pDataH->Subchunk2Size);
+	printf("Subchunk2Size: %" PRIu32 "\n", d->Subchunk2Size);
 	return;
 }
 
 void
-print_metadata(metadata_head h) {
+print_metadata(metadata_t h) {
 	if (h != NULL) {
 		printf("Metadata size: %" PRIu32 "\n", h->metadataSize);
 		metadata_list l = h->listFirst;
@@ -316,42 +320,76 @@ print_metadata(metadata_head h) {
 	}
 }
 
-uint32_t
-get_riff_chunksize(riff_ptr pRIFF) {
-	return (pRIFF != NULL) ? pRIFF->ChunkSize : 0;
+/* Input and output */
+
+uint32_t 
+riff_size(riff_t r) {
+	return r->ChunkSize;
 }
 
-uint32_t
-get_sample_rate(fmt_ptr pFMT) {
-	return (pFMT != NULL) ? pFMT->SampleRate : 0;
+uint32_t 
+file_size(FILE *f) {
+	riff_t r = get_riff_chunk(f);
+	uint32_t size = 8 +riff_size(r);
+	free_riff_chunk(r);
+	return size;
 }
 
+// uint32_t fmt_size(fmt_t t) {
+// }
+
 uint32_t
-get_byte_rate(fmt_ptr pFMT) {
-	return (pFMT != NULL) ? pFMT->SampleRate : 0;
+audio_size(data_t d) {
+	return d->Subchunk2Size;
 }
+
+uint32_t 
+metadata_size(metadata_t m) {
+	return m->metadataSize;
+}
+
+// uint32_t
+// sample_rate(fmt_t fmt) {
+// 	return (fmt != NULL) ? fmt->SampleRate : 0;
+// }
+
+// int32_t
+// byte_rate(fmt_t fmt) {
+// 	return (fmt != NULL) ? fmt->SampleRate : 0;
+// }
 
 uint16_t
-get_bits_per_sample(fmt_ptr pFMT) {
-	return pFMT->BitsPerSample;
+bits_per_sample(fmt_t fmt) {
+	return fmt->BitsPerSample;
 }
 
+
+/* Operations */
+
 uint32_t
-get_data_size(data_header_ptr pDataH) {
-	return pDataH->Subchunk2Size;
+calc_riff_size(fmt_t fmt, data_t d, metadata_t m) {
+	return (36 + audio_size(d) + metadata_size(m));
+}
+
+void 
+set_riff_size(riff_t r, uint32_t size) {
+	r->ChunkSize = size;
 }
 
 /* Writing to file */
 
 void
-write_riff_chunk(FILE *file, riff_ptr RIFF) {
+write_riff(FILE *file, riff_t r) {
+	assert(file != NULL);
+	assert(r != NULL);
+
 	fseek(file, 0, SEEK_SET);
 
 	char *tmpstr = "RIFF";
 	for (int i=0; i<4; i++)
 		fputc(tmpstr[i], file);
 
-	write_little_endian(file, (int32_t)(RIFF!=NULL) ? RIFF->ChunkSize : 0, 32);	
+	write_little_endian(file, (int32_t)r->ChunkSize, 32);	
 
 	tmpstr = "WAVE";
 	for (int i=0; i<4; i++)
@@ -359,7 +397,10 @@ write_riff_chunk(FILE *file, riff_ptr RIFF) {
 }
 
 void
-write_fmt_subchunk(FILE *file, fmt_ptr FMT) {
+write_fmt(FILE *file, fmt_t fmt) {
+	assert(file != NULL);
+	assert(fmt != NULL);
+
 	fseek(file, 12, SEEK_SET);
 
 	char *tmpstr = "fmt\040";
@@ -368,74 +409,35 @@ write_fmt_subchunk(FILE *file, fmt_ptr FMT) {
 
 	write_little_endian(file, 16, 32);
 
-	if (FMT != NULL) {
-		write_little_endian(file, (uint32_t)FMT->AudioFormat, 16);
-		write_little_endian(file, (uint32_t)FMT->NumChannels, 16);
-		write_little_endian(file, (uint32_t)FMT->SampleRate, 32);
-		write_little_endian(file, (uint32_t)FMT->ByteRate, 32);
-		write_little_endian(file, (uint32_t)FMT->BlockAlign, 16);
-		write_little_endian(file, (uint32_t)FMT->BitsPerSample, 16);
-	} else
-		write_little_endian(file, 0, 128);
+	write_little_endian(file, (uint32_t)fmt->AudioFormat, 16);
+	write_little_endian(file, (uint32_t)fmt->NumChannels, 16);
+	write_little_endian(file, (uint32_t)fmt->SampleRate, 32);
+	write_little_endian(file, (uint32_t)fmt->ByteRate, 32);
+	write_little_endian(file, (uint32_t)fmt->BlockAlign, 16);
+	write_little_endian(file, (uint32_t)fmt->BitsPerSample, 16);
 }
 
 void
-write_def_data_header(FILE *file) {
+write_data(FILE *file, data_t d) {
+	assert(file != NULL);
+	assert(d != NULL);
+
 	fseek(file, 36, SEEK_SET);
 
 	char *tmpstr = "data";
 	for (int i=0; i<4; i++)
 		fputc(tmpstr[i], file);
 
-	// don't write the size before the data
-	//write_little_endian(file, (uint32_t)(DATA!=NULL) ? DATA->Subchunk2Size : 0, 32);
+	write_little_endian(file, d->Subchunk2Size, 32);
 }
 
-static int32_t
-copy_header(FILE *source, FILE *destination, int32_t *datasize) {
-	int32_t offset = 0;
-
-	riff_ptr riff = get_riff_chunk(source);
-	fmt_ptr fmt = get_fmt_subchunk(source);
-	data_header_ptr datahead = get_data_header(source, &offset);
-	
-	write_riff_chunk(destination, riff);
-	write_fmt_subchunk(destination, fmt);
-	write_def_data_header(destination);
-
-	free_riff_chunk(riff);
-	free_fmt_subchunk(fmt);
-	free_data_header(datahead);
-
-	if (datasize != NULL)
-		*datasize = datahead->Subchunk2Size;
-
-	return offset;
+void
+write_metadata(FILE *file, metadata_t m) {
+	// ...
 }
 
 /* Editing existing files */
 
-void
-remove_all_metadata(FILE *file, const char *filepath) {
-	char *temppath = "temp_file_removing_metadata.temp";
-	FILE *tempF = fopen(temppath, "wb");
-
-	int32_t datasize = 0;
-	int32_t offset = copy_header(file, tempF, &datasize);
-
-	fseek(file, offset, SEEK_SET);	
-	fseek(tempF, offset, SEEK_SET);
-
-	for (int i=0; i<datasize; i++)
-		fputc(fgetc(file), tempF);
-
-	fclose(file);
-
-	if (remove(filepath) != 0)
-		exit_error(COULDNT_REMOVE_FILE);
-
-	if (rename(temppath, filepath) != 0)
-		exit_error(COULDNT_RENAME_FILE);
-
-	fclose(tempF);
-}
+// void
+// remove_all_metadata(FILE *file, const char *filepath) {
+// }
