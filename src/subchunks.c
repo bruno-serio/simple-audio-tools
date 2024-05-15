@@ -209,6 +209,52 @@ get_metadata(FILE *file) {
 	return (l != NULL) ? create_metadata_head_from_list(l) : NULL;
 }
 
+riff_t
+new_riff_chunk(uint32_t ChunkSize) {
+	riff_t r = alloc_riff_chunk();
+	char *id = "RIFF";
+	for (int i=0; i<4; i++)
+		r->ChunkID[i] = id[i];
+	r->ChunkSize = ChunkSize;
+	return r;
+}
+
+fmt_t
+new_fmt_chunk(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels,
+	      uint32_t SampleRate, uint32_t ByteRate, uint16_t BlockAlign, uint16_t BitsPerSample) {
+	fmt_t fmt = alloc_fmt_subchunk();
+	char *id = "fmt\040";
+	for (int i=0; i<4; i++)
+		fmt->Subchunk1ID[i] = id[i];
+
+	 fmt->Subchunk1Size = Subchunk1Size;
+	 fmt->AudioFormat = AudioFormat;
+	 fmt->NumChannels = NumChannels;
+	 fmt->SampleRate = SampleRate;
+	 fmt->ByteRate = ByteRate;
+	 fmt->BlockAlign = BlockAlign;
+	 fmt->BitsPerSample = BitsPerSample;
+
+	 if (fmt->BlockAlign != (fmt->NumChannels * fmt->BitsPerSample/8))
+		exit_error(BLOCK_ALIGN_TEST_FAIL);
+
+	 if (fmt->ByteRate != (fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8))
+		exit_error(BYTE_RATE_TEST_FAIL);
+
+	 return fmt;
+}
+
+data_t new_data_chunk(uint32_t Subchunk2Size) {
+	data_t d = alloc_data_header();
+	char *id = "data";
+	
+	for (int i=0; i<4; i++)
+		d->Subchunk2ID[i] = id[i];
+	d->Subchunk2Size = Subchunk2Size;
+
+	return d;
+}
+
 void
 free_riff_chunk(riff_t r) {
 	free(r);

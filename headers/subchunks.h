@@ -20,6 +20,11 @@ fmt_t get_fmt_subchunk(FILE *file);
 data_t get_data_header(FILE *file, int32_t *start);
 metadata_t get_metadata(FILE *file);
 
+riff_t new_riff_chunk(uint32_t ChunkSize);
+fmt_t new_fmt_chunk(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels,	uint32_t SampleRate, 
+		    uint32_t ByteRate, uint16_t BlockAlign, uint16_t BitsPerSample);
+data_t new_data_chunk(uint32_t Subchunk2Size);
+
 void free_riff_chunk(riff_t r);
 void free_fmt_subchunk(fmt_t fmt);
 void free_data_header(data_t d);

@@ -7,11 +7,8 @@
 #include "subchunks.h"
 #include "utils.h"
 
-FILE* write_file(const char* path, riff_t r, fmt_t fmt, data_t d, metadata_t m);
-
-/*
-FILE* create_new_file(const char *fileName, riff_t r, fmt_t fmt);
-void copy_audio_data(FILE *source, FILE *dest);
-*/
+FILE* write_file_header(const char* path, riff_t r, fmt_t fmt, data_t d);
+void copy_audio(FILE* src, FILE* dest, int32_t (*processing)(int32_t));
+void append_metadata(FILE* f, metadata_t m);
 
 #endif // _FILE_CREATION_H
