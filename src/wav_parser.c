@@ -45,13 +45,13 @@ int main(int argc, char *argv[]) {
 
 		print_metadata(mdhead);
 
-		printf("Peak: %d\n", get_abs_peak_def(audioFile));
+		printf("Peak: %d\n", __GET_ABS_PEAK(audioFile));
 
 		fclose(audioFile);
 		fclose(newFile);
-		free_riff_chunk(RIFF);
-		free_fmt_subchunk(FMT);	
-		free_data_header(dataHeader);
+		__FREE_RIFF(RIFF);
+		__FREE_FMT(FMT);	
+		__FREE_DATA(dataHeader);
 		if (mdhead != NULL)
 			free_metadata(&mdhead);
 	}

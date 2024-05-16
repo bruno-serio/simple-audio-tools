@@ -1,6 +1,62 @@
-#include "../headers/subchunks.h"
 #include "../headers/data_processing.h"
-#include "../headers/utils.h"
+
+struct _file_slice {
+	FILE* file;
+	uint32_t length;
+	int32_t offset;
+	uint16_t BitsPerSample;
+};
+
+file_slice 
+new_fslice(FILE* file, uint32_t length, int32_t offset, uint16_t BitsPerSample) {
+	file_slice s = malloc(sizeof(struct _file_slice));
+	if (s == NULL)
+		exit_error(MEM_ALLOC_FAILED);
+
+	s->file = file;
+	s->length = length;
+	s->offset = offset;
+	s->BitsPerSample = BitsPerSample;
+
+	return s;
+}
+
+void 
+free_fslice(file_slice* s, bool closeFile) {
+	if (closeFile)
+		fclose((*s)->file);
+	free(*s);
+	*s = NULL;
+}
+
+
+FILE*
+fslice_file(file_slice s) {
+	if (s == NULL)
+		exit_error(PASSED_NULL_POINTER);
+	return s->file;
+}
+
+uint32_t 
+fslice_len(file_slice s) {
+	if (s == NULL)
+		exit_error(PASSED_NULL_POINTER);
+	return s->length;
+}
+
+int32_t 
+fslice_offset(file_slice s) {
+	if (s == NULL)
+		exit_error(PASSED_NULL_POINTER);
+	return s->offset;
+}
+
+uint16_t 
+fslice_bits(file_slice s) {
+	if (s == NULL)
+		exit_error(PASSED_NULL_POINTER);
+	return s->BitsPerSample;
+}
 
 int16_t
 get_abs_peak(FILE *file, uint16_t BitsPerSample) {
@@ -21,7 +77,7 @@ get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 		if (sample < min) min = sample;
 	}
 
-	free_fmt_subchunk(fmt);
-	free_data_header(d);
+	__FREE_FMT(fmt);
+	__FREE_DATA(d);
 	return ((max >= (-min)) ? max : -(min+1));
 }

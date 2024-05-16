@@ -256,23 +256,23 @@ data_t new_data_chunk(uint32_t Subchunk2Size) {
 }
 
 void
-free_riff_chunk(riff_t r) {
-	free(r);
-	r = NULL;
+free_riff_chunk(riff_t* r) {
+	free(*r);
+	*r = NULL;
 	return;
 }
 
 void
-free_fmt_subchunk(fmt_t fmt) {
-	free(fmt);
-	fmt = NULL;
+free_fmt_subchunk(fmt_t* fmt) {
+	free(*fmt);
+	*fmt = NULL;
 	return;
 }
 
 void
-free_data_header(data_t d) {
-	free(d);
-	d = NULL;
+free_data_header(data_t* d) {
+	free(*d);
+	*d = NULL;
 	return;
 }
 
@@ -370,6 +370,8 @@ print_metadata(metadata_t h) {
 
 uint32_t 
 riff_size(riff_t r) {
+	if (r == NULL)
+		exit_error(PASSED_NULL_POINTER);
 	return r->ChunkSize;
 }
 
@@ -377,7 +379,7 @@ uint32_t
 file_size(FILE *f) {
 	riff_t r = get_riff_chunk(f);
 	uint32_t size = 8 +riff_size(r);
-	free_riff_chunk(r);
+	__FREE_RIFF(r);
 	return size;
 }
 
@@ -386,12 +388,14 @@ file_size(FILE *f) {
 
 uint32_t
 audio_size(data_t d) {
+	if (d == NULL)
+		exit_error(PASSED_NULL_POINTER);
 	return d->Subchunk2Size;
 }
 
 uint32_t 
 metadata_size(metadata_t m) {
-	return m->metadataSize;
+	return (m != NULL) ? m->metadataSize : 0;
 }
 
 // uint32_t
@@ -408,7 +412,6 @@ uint16_t
 bits_per_sample(fmt_t fmt) {
 	return fmt->BitsPerSample;
 }
-
 
 /* Operations */
 

@@ -56,6 +56,6 @@ get_filepath(const char *dir, const char *fileName) {
 }
 
 void
-free_filepath(const char *fp) {
-	free((char*)fp);
+free_filepath(const char **fp) {
+	free((char*)(*fp));
 }

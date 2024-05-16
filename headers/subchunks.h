@@ -8,6 +8,10 @@
 
 #define _INFO_LE 0x4F464E49
 
+#define __FREE_RIFF(r) ({if (r != NULL) free_riff_chunk(&r);})
+#define __FREE_FMT(f) ({if (f != NULL) free_fmt_subchunk(&f);})
+#define __FREE_DATA(d) ({if (d != NULL) free_data_header(&d);})
+
 typedef struct _riff_chunk *riff_t;
 typedef struct _fmt_subchunk *fmt_t;
 typedef struct _data_header *data_t;
@@ -25,10 +29,10 @@ fmt_t new_fmt_chunk(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumCh
 		    uint32_t ByteRate, uint16_t BlockAlign, uint16_t BitsPerSample);
 data_t new_data_chunk(uint32_t Subchunk2Size);
 
-void free_riff_chunk(riff_t r);
-void free_fmt_subchunk(fmt_t fmt);
-void free_data_header(data_t d);
-void free_metadata(metadata_t *m);
+void free_riff_chunk(riff_t* r);
+void free_fmt_subchunk(fmt_t* fmt);
+void free_data_header(data_t* d);
+void free_metadata(metadata_t* m);
 
 /* Prints and debugs */
 
@@ -62,7 +66,7 @@ void set_riff_size(riff_t r, uint32_t size);
 void write_riff(FILE *file, riff_t RIFF);
 void write_fmt(FILE *file, fmt_t FMT);
 void write_data(FILE *file, data_t d);
-void write_metadata(FILE *file, metadata_t m);
+void write_metadata(FILE *file, metadata_t m);  // ######################### TO BE DONE
 
 /* Editing existing files */
 
