@@ -69,16 +69,20 @@ append_metadata(FILE* f, const char* path, metadata_t m) {
 	uint32_t req_riffsize = calc_riff_size(fmt, d, m);
 
 	if (req_riffsize != riff_size(r)) {
-		// create new file with correct header and replace current dest file 'f'.
-		// set_riff_size(r, req_riffsize);
+		const char* tempPath = get_filepath(path, "__temp__");
+		set_riff_size(r, req_riffsize);
+		FILE* n = write_file_header(tempPath, r, fmt, d);
+		file_slice s = __SLICE_AUDIO_FILE(f);
+		copy_audio(s, n, NULL);
 		
-		// ...
-		 
-		// fclose(f)
-		// fclose(newfile)
-		// remove(path)
-		// rename(tempname, path)
-		// fopen(path)
+		__FREE_FSLICE(s, true);
+		fclose(n);
+
+		remove(path);
+		rename(tempPath, path);
+		__FREE_FILEPATH(tempPath);
+
+		f = fopen(path, "wb+");
 	}
 
 	fseek(f, 0, SEEK_END);

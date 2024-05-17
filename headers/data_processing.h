@@ -10,7 +10,7 @@
 #define DEF_BITSPERSAMPLE 0
 
 #define __GET_ABS_PEAK(data) get_abs_peak((data), DEF_BITSPERSAMPLE)
-#define __FREE_FSLICE(s, b) ({if (s != NULL) free_fslice(&s, b)})
+#define __FREE_FSLICE(s, b) ({if (s != NULL) free_fslice(&s, b);})
 	
 typedef struct _file_slice* file_slice;
 
@@ -23,9 +23,9 @@ int32_t fslice_offset(file_slice s);
 uint16_t fslice_bits(file_slice s);
 
 int16_t get_abs_peak(FILE *file, uint16_t BitsPerSample);
-float normalize_ratio(int32_t peak, uint16_t BitsPerSample);  // ######################### TO BE DONE
+float normalize_ratio(int32_t peak, uint16_t BitsPerSample);  
 
-int32_t scale_sample(int32_t sample, float ratio);  // ######################### TO BE DONE
-int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample);	// ######################### TO BE DONE
+int32_t scale_sample(int32_t sample, float ratio);  
+int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample);	
 
 #endif // _DATA_PROCESSING_H_

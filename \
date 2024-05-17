@@ -121,4 +121,7 @@ int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample) {
 		return (sample >= (max - offset)) ? max : sample + offset;
 	else
 		return (sample <= (min - offset)) ? min : sample + offset;
+
+
+
 }
