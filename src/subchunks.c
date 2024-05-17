@@ -66,7 +66,7 @@ alloc_data_header() {
 }
 
 riff_t
-get_riff_chunk(FILE *file) {
+get_riff(FILE *file) {
 	riff_t r = alloc_riff_chunk();
 	for (int i=0; i<4; i++) r->ChunkID[i] = fgetc(file);
 	r->ChunkSize = read_little_endian(file, 32);
@@ -75,7 +75,7 @@ get_riff_chunk(FILE *file) {
 }
 
 fmt_t
-get_fmt_subchunk(FILE *file) {
+get_fmt(FILE *file) {
 	fmt_t fmt = alloc_fmt_subchunk();
 	fseek(file, 12, SEEK_SET);
 
@@ -100,7 +100,7 @@ get_fmt_subchunk(FILE *file) {
 }
 
 data_t
-get_data_header(FILE *file, int32_t *start) {
+get_datahead(FILE *file, int32_t *start) {
 	data_t d = alloc_data_header();
 	int32_t dataStart = 35;
 
@@ -121,7 +121,7 @@ get_data_header(FILE *file, int32_t *start) {
 }
 
 static metadata_list
-create_metadata_node(char *code, uint32_t infoSize, char *info) {
+new_metadata_node(char *code, uint32_t infoSize, char *info) {
 	metadata_list node = malloc(sizeof(struct _metadata_node));
 	for (int i=0; i<4; i++)
 		node->code[i] = code[i];
@@ -200,7 +200,7 @@ get_metadata(FILE *file) {
 			for (uint32_t i=0; i<infosize; i++)
 				tagInfo[i] = fgetc(file);
 
-			metadata_list temp = create_metadata_node(tagid, infosize, tagInfo);
+			metadata_list temp = new_metadata_node(tagid, infosize, tagInfo);
 			l = append_metadata_list(&l, temp);
 			fseek(file, infosize, SEEK_CUR);
 		}
@@ -210,7 +210,7 @@ get_metadata(FILE *file) {
 }
 
 riff_t
-new_riff_chunk(uint32_t ChunkSize) {
+new_riff(uint32_t ChunkSize) {
 	riff_t r = alloc_riff_chunk();
 	char *id = "RIFF";
 	for (int i=0; i<4; i++)
@@ -220,31 +220,26 @@ new_riff_chunk(uint32_t ChunkSize) {
 }
 
 fmt_t
-new_fmt_chunk(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels,
-	      uint32_t SampleRate, uint32_t ByteRate, uint16_t BlockAlign, uint16_t BitsPerSample) {
+new_fmt(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels, uint32_t SampleRate, uint16_t BitsPerSample) {
 	fmt_t fmt = alloc_fmt_subchunk();
 	char *id = "fmt\040";
 	for (int i=0; i<4; i++)
 		fmt->Subchunk1ID[i] = id[i];
 
-	 fmt->Subchunk1Size = Subchunk1Size;
-	 fmt->AudioFormat = AudioFormat;
-	 fmt->NumChannels = NumChannels;
-	 fmt->SampleRate = SampleRate;
-	 fmt->ByteRate = ByteRate;
-	 fmt->BlockAlign = BlockAlign;
-	 fmt->BitsPerSample = BitsPerSample;
+	fmt->Subchunk1Size = Subchunk1Size;
+	fmt->AudioFormat = AudioFormat;
+	fmt->NumChannels = NumChannels;
+	fmt->SampleRate = SampleRate;
+	fmt->BlockAlign = BlockAlign;
+	fmt->BitsPerSample = BitsPerSample;
+	
+	fmt->BlockAlign = fmt->NumChannels * fmt->BitsPerSample/8
+	fmt->ByteRate = fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8;
 
-	 if (fmt->BlockAlign != (fmt->NumChannels * fmt->BitsPerSample/8))
-		exit_error(BLOCK_ALIGN_TEST_FAIL);
-
-	 if (fmt->ByteRate != (fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8))
-		exit_error(BYTE_RATE_TEST_FAIL);
-
-	 return fmt;
+	return fmt;
 }
 
-data_t new_data_chunk(uint32_t Subchunk2Size) {
+data_t new_datahead(uint32_t Subchunk2Size) {
 	data_t d = alloc_data_header();
 	char *id = "data";
 	
@@ -377,7 +372,7 @@ riff_size(riff_t r) {
 
 uint32_t 
 file_size(FILE *f) {
-	riff_t r = get_riff_chunk(f);
+	riff_t r = get_riff(f);
 	uint32_t size = 8 +riff_size(r);
 	__FREE_RIFF(r);
 	return size;

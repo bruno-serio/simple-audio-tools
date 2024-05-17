@@ -64,8 +64,8 @@ get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 	int16_t min = 0;
 	int32_t start = 0; 
 
-	fmt_t fmt = get_fmt_subchunk(file);
-	data_t d = get_data_header(file, &start);
+	fmt_t fmt = get_fmt(file);
+	data_t d = get_datahead(file, &start);
 	uint32_t sampleCount = audio_size(d);
 	if (BitsPerSample == DEF_BITSPERSAMPLE) BitsPerSample = bits_per_sample(fmt);
 
@@ -110,6 +110,9 @@ int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample) {
 		case 16: max = 0x7fff;		// 0111111111111111
 			 min = 0x8000;		// 1000000000000000
 			 break;
+		case 24:
+			 //????????????;
+			 //break;
 		case 32: max = 0x7fffffff;	// 01111111111111111111111111111111
 			 min = 0x80000000;	// 10000000000000000000000000000000
 			 break;

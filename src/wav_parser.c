@@ -29,11 +29,11 @@ int main(int argc, char *argv[]) {
 		FILE *audioFile = fopen(filePath, "rb");
 		FILE *newFile = NULL;
 	
-		riff_t RIFF = get_riff_chunk(audioFile);
+		riff_t RIFF = get_riff(audioFile);
 		print_riff_chunk(RIFF);
-		fmt_t FMT = get_fmt_subchunk(audioFile);
+		fmt_t FMT = get_fmt(audioFile);
 		print_fmt_subchunk(FMT);
-		data_t dataHeader = get_data_header(audioFile, &dataStart);
+		data_t dataHeader = get_datahead(audioFile, &dataStart);
 		print_data_header(dataHeader);
 		metadata_t mdhead = get_metadata(audioFile);
 
