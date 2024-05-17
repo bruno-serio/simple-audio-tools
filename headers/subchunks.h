@@ -6,7 +6,7 @@
 #include <inttypes.h>
 #include <assert.h>
 
-#define _INFO_LE 0x4F464E49
+#define INFO_LE 0x4F464E49
 
 #define __FREE_RIFF(r) ({if (r != NULL) free_riff_chunk(&r);})
 #define __FREE_FMT(f) ({if (f != NULL) free_fmt_subchunk(&f);})

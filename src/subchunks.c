@@ -38,8 +38,8 @@ struct _metadata_node {
 struct _metadata_head {
 	uint16_t tagsAmount;
 	uint32_t metadataSize;
-	struct _metadata_node *listFirst;
-	struct _metadata_node *listLast;
+	struct _metadata_node *first;
+	struct _metadata_node *last;
 };
 
 /* Memory allocation and freeing */
@@ -132,39 +132,31 @@ new_metadata_node(char *code, uint32_t infoSize, char *info) {
 	return node;
 }
 
-static metadata_list
-append_metadata_list(metadata_list *l, metadata_list node) {
-	if (l == NULL || *l == NULL) 
-		return node;
-
-	else if ((*l)->R == NULL) {
-		node->L = *l;
-		(*l)->R = node;
-		return node;
-	} else {
-		metadata_list dummy = *l;
-		while (dummy->R != NULL)
-			dummy = dummy->R;
-		return append_metadata_list(&dummy, node);
-	}
+metadata_t
+new_metadata_head() {
+	metadata_t m = malloc(sizeof(struct _metadata_head));
+	if (m == NULL)
+		exit_error(MEM_ALLOC_FAILED);
+	m->tagsAmount = 0;
+	m->metadataSize = 12;
+	m->first = m->last = NULL;
+	return m;
 }
 
-static metadata_t
-create_metadata_head_from_list(metadata_list l) {
-	metadata_t h = malloc(sizeof(struct _metadata_head));
+void
+add_metadata_tag(metadata_t md, char *code, uint32_t infoSize, char *info) {
+	if (md == NULL)
+		exit_error(PASSED_NULL_POINTER);
 
-	h->metadataSize = 0;
-	h->listFirst = l;
-
-	while (l != NULL && l->R != NULL) {
-		h->metadataSize += 16 + l->infoSize;
-		l = l->R;
-	}
-
-	h->metadataSize += 16 + l->infoSize;
-	h->listLast = l;
-
-	return h;
+	metadata_list tag = new_metadata_node(code, infoSize, info);
+	tag->L = md->last;
+	if (md->last != NULL)
+		md->last->R = tag;
+	else
+		md->first = tag;
+	md->last = tag;
+	md->metadataSize += 8 + infoSize;
+	md->tagsAmount++;
 }
 
 metadata_t
@@ -174,7 +166,7 @@ get_metadata(FILE *file) {
 	uint32_t id = 0;
 	int32_t length = 0;
 
-	for (int maxloop = 0; maxloop < 12 && feof(file) == 0 && id != _INFO_LE; maxloop++) {
+	for (int maxloop = 0; maxloop < 12 && feof(file) == 0 && id != INFO_LE; maxloop++) {
 		for (c = fgetc(file); feof(file) == 0 && c != 'O'; fseek(file, -2, SEEK_CUR)) {
 			c = fgetc(file);
 			length++;
@@ -185,8 +177,10 @@ get_metadata(FILE *file) {
 		}
 	}
 
-	metadata_list l = NULL;
-	if (id == _INFO_LE) {
+	metadata_t m = NULL; 
+
+	if (id == INFO_LE) {
+		m = new_metadata_head();
 		while (feof(file) == 0 && length > 0) {
 			char tagid[4];
 			for (int i=0;i<4;i++) {
@@ -200,13 +194,11 @@ get_metadata(FILE *file) {
 			for (uint32_t i=0; i<infosize; i++)
 				tagInfo[i] = fgetc(file);
 
-			metadata_list temp = new_metadata_node(tagid, infosize, tagInfo);
-			l = append_metadata_list(&l, temp);
+			add_metadata_tag(m, tagid, infosize, tagInfo);
 			fseek(file, infosize, SEEK_CUR);
 		}
 	}
-
-	return (l != NULL) ? create_metadata_head_from_list(l) : NULL;
+	return m;
 }
 
 riff_t
@@ -230,10 +222,9 @@ new_fmt(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels, uint
 	fmt->AudioFormat = AudioFormat;
 	fmt->NumChannels = NumChannels;
 	fmt->SampleRate = SampleRate;
-	fmt->BlockAlign = BlockAlign;
 	fmt->BitsPerSample = BitsPerSample;
 	
-	fmt->BlockAlign = fmt->NumChannels * fmt->BitsPerSample/8
+	fmt->BlockAlign = fmt->NumChannels * fmt->BitsPerSample/8;
 	fmt->ByteRate = fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8;
 
 	return fmt;
@@ -271,24 +262,19 @@ free_data_header(data_t* d) {
 	return;
 }
 
-static void
-free_metadata_list(metadata_list *l) {
-	if (l != NULL) {
-		while (*l != NULL) {
-			metadata_list rm = *l;
-			*l = (*l)->R;
-			free(rm->info);
-			free(rm);
-		}
-	}
-}
-
 void
 free_metadata(metadata_t *m) {
-	if (m != NULL) {
-		free_metadata_list(&((*m)->listFirst));
-		free(*m);
+	metadata_list l = (*m)->first;
+	while (l != NULL) {
+		metadata_list del = l;
+		l = l->R;
+		free(del->code);
+		free(del->info);
+		free(del);
+		del = NULL;
 	}
+	free(*m);
+	*m = NULL;
 }
 
 /* Input and output */
@@ -351,7 +337,7 @@ void
 print_metadata(metadata_t h) {
 	if (h != NULL) {
 		printf("Metadata size: %" PRIu32 "\n", h->metadataSize);
-		metadata_list l = h->listFirst;
+		metadata_list l = h->first;
 		while (l != NULL) {
 			for (int i=0; i<4; i++)
 				printf("%c",l->code[i]);
