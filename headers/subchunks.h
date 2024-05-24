@@ -66,7 +66,7 @@ void set_riff_size(riff_t r, uint32_t size);
 void write_riff(FILE *file, riff_t RIFF);
 void write_fmt(FILE *file, fmt_t FMT);
 void write_data(FILE *file, data_t d);
-void write_metadata(FILE *file, metadata_t m, bool write_head);  // ######################### TO BE DONE
+void write_metadata(FILE *file, metadata_t m, bool write_head);
 
 /* Editing existing files */
 

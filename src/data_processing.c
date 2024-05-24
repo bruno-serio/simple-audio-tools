@@ -89,6 +89,8 @@ float normalize_ratio(int32_t peak, uint16_t BitsPerSample) {
 		   	 break;
 		case 16: max = 0x7fff;		// 0111111111111111
 			 break;
+		case 24: max = 0x7fffff;	// 011111111111111111111111
+			 break;
 		case 32: max = 0x7fffffff;	// 01111111111111111111111111111111
 			 break;
 		default:
@@ -110,9 +112,9 @@ int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample) {
 		case 16: max = 0x7fff;		// 0111111111111111
 			 min = 0x8000;		// 1000000000000000
 			 break;
-		case 24:
-			 //????????????;
-			 //break;
+		case 24: max = 0x007fffff;
+			 min = 0xff800000;
+			 break;
 		case 32: max = 0x7fffffff;	// 01111111111111111111111111111111
 			 min = 0x80000000;	// 10000000000000000000000000000000
 			 break;
