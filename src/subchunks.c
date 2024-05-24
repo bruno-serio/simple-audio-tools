@@ -31,8 +31,8 @@ struct _metadata_node {
 	char code[4];
 	uint32_t infoSize;
 	char *info;
-	struct _metadata_node *R;
 	struct _metadata_node *L;
+	struct _metadata_node *R;
 };
 
 struct _metadata_head {
@@ -462,8 +462,33 @@ write_data(FILE *file, data_t d) {
 }
 
 void
-write_metadata(FILE *file, metadata_t m) {
-	// ...
+write_metadata(FILE *file, metadata_t m, bool write_head) {
+	fseek(file, 0, SEEK_END);
+
+	if (write_head) {
+		char* list = "LIST";
+		for (int i=0; i<4; i++)
+			fputc(list[i], file);
+
+		for (int i=0; i<4; i++)
+			fputc(0x00, file);
+
+		char* info = "INFO";
+		for (int i=0; i<4; i++)
+			fputc(info[i], file);
+	}
+	
+	if (!m)	return;
+
+	metadata_list rec = m->first;
+	for (int i=0; !rec && i<m->tagsAmount; i++) {
+		for (int j=0; j<4; j++)
+			fputc(rec->code[j], file);
+		write_little_endian(file, rec->infoSize, 32);
+		for (uint32_t j=0; j<rec->infoSize && rec->info[j] != '\0'; j++)
+			fputc(rec->info[j], file);
+		rec = rec->R;
+	}
 }
 
 /* Editing existing files */

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "subchunks.h"
 #include "data_processing.h"
 #include "utils.h"
@@ -14,6 +15,6 @@
 FILE* write_file_header(const char* path, riff_t r, fmt_t fmt, data_t d);
 file_slice slice_audio_file(FILE* f, int32_t start, int32_t end, uint16_t BitsPerSample);
 void copy_audio(file_slice src, FILE* dest, int32_t (*process)(int32_t));
-void append_metadata(FILE* f, const char* path, metadata_t m);  // ######################### TO BE DONE
+void append_metadata(FILE* f, const char* path, metadata_t m, bool write_head);
 
 #endif // _FILE_CREATION_H

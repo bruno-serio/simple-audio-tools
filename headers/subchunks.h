@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <stdbool.h>
 #include <assert.h>
 
 #define INFO_LE 0x4F464E49
@@ -65,7 +66,7 @@ void set_riff_size(riff_t r, uint32_t size);
 void write_riff(FILE *file, riff_t RIFF);
 void write_fmt(FILE *file, fmt_t FMT);
 void write_data(FILE *file, data_t d);
-void write_metadata(FILE *file, metadata_t m);  // ######################### TO BE DONE
+void write_metadata(FILE *file, metadata_t m, bool write_head);  // ######################### TO BE DONE
 
 /* Editing existing files */
 

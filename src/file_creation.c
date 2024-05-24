@@ -62,7 +62,7 @@ copy_audio(file_slice src, FILE* dest, int32_t (*process)(int32_t)) {
 }
 
 void 
-append_metadata(FILE* f, const char* path, metadata_t m) {
+append_metadata(FILE* f, const char* path, metadata_t m, bool write_head) {
 	riff_t r = get_riff(f);
 	fmt_t fmt = get_fmt(f);
 	data_t d = get_datahead(f, NULL);
@@ -86,5 +86,5 @@ append_metadata(FILE* f, const char* path, metadata_t m) {
 	}
 
 	fseek(f, 0, SEEK_END);
-	write_metadata(f, m);
+	write_metadata(f, m, write_head);
 }
