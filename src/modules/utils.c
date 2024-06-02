@@ -24,6 +24,12 @@ read_big_endian(FILE *file, uint8_t bits) {
 
 	return sample;
 }
+
+float
+read_f_little_endian(FILE *file) {
+	return (float)read_little_endian(file, 32);
+}
+
 void
 write_little_endian(FILE *fileOut, int32_t n, uint8_t bits) {
 	if (fileOut == NULL)

@@ -266,8 +266,8 @@ free_metadata(metadata_t *m) {
 	while (l != NULL) {
 		metadata_list del = l;
 		l = l->R;
-		free(del->code);
-		free(del->info);
+		if (del->info)
+			free(del->info);
 		free(del);
 		del = NULL;
 	}
@@ -333,6 +333,7 @@ print_data_header(data_t d) {
 
 void
 print_metadata(metadata_t h) {
+	printf("---METADATA\n");
 	if (h != NULL) {
 		printf("Metadata size: %" PRIu32 "\n", h->metadataSize);
 		metadata_list l = h->first;
@@ -352,6 +353,13 @@ riff_size(riff_t r) {
 	if (r == NULL)
 		exit_error(PASSED_NULL_POINTER);
 	return r->ChunkSize;
+}
+
+uint16_t 
+audio_format(fmt_t f) {
+	if (f == NULL)
+		exit_error(PASSED_NULL_POINTER);
+	return f->AudioFormat;
 }
 
 uint32_t 

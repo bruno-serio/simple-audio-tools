@@ -14,6 +14,8 @@
 #define __FREE_RIFF(r) ({if (r != NULL) free_riff_chunk(&r);})
 #define __FREE_FMT(f) ({if (f != NULL) free_fmt_subchunk(&f);})
 #define __FREE_DATA(d) ({if (d != NULL) free_data_header(&d);})
+#define __FREE_METADATA(d) ({if (d != NULL) free_metadata(&d);})
+		
 
 typedef struct _riff_chunk *riff_t;
 typedef struct _fmt_subchunk *fmt_t;
@@ -46,6 +48,7 @@ void print_metadata(metadata_t h);
 /* Input and output */
 
 uint32_t riff_size(riff_t r);
+uint16_t audio_format(fmt_t f);
 uint32_t file_size(FILE *f);
 // uint32_t fmt_size(fmt_t t);
 uint32_t audio_size(data_t d);
