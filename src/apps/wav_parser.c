@@ -3,11 +3,11 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "../headers/subchunks.h"
-#include "../headers/data_processing.h"
-#include "../headers/utils.h"
-#include "../headers/exit_messages.h"
-#include "../headers/file_creation.h"
+#include "../../headers/subchunks.h"
+#include "../../headers/data_processing.h"
+#include "../../headers/utils.h"
+#include "../../headers/exit_messages.h"
+#include "../../headers/file_creation.h"
 
 // *****
 
@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
 		print_data_header(dataHeader);
 		metadata_t mdhead = get_metadata(audioFile);
 
-
 		if (argc>1) {
 			// newFile = create_new_file(argv[fileN+1], RIFF, FMT);
 			// copy_audio_data(audioFile, newFile);
@@ -48,7 +47,7 @@ int main(int argc, char *argv[]) {
 		printf("Peak: %d\n", __GET_ABS_PEAK(audioFile));
 
 		fclose(audioFile);
-		fclose(newFile);
+		//fclose(newFile);
 		__FREE_RIFF(RIFF);
 		__FREE_FMT(FMT);	
 		__FREE_DATA(dataHeader);

@@ -1,4 +1,4 @@
-#include "../headers/file_creation.h"
+#include "../../headers/file_creation.h"
 
 FILE*
 write_file_header(const char* filename, riff_t r, fmt_t fmt, data_t d) {

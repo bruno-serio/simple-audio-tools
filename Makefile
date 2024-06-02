@@ -1,39 +1,41 @@
 CC=gcc
 CFLAGS= -Wall -Wextra
 
-HDIR=headers
-ODIR=obj
-CDIR=src
-BIN=bin
-OUT=output
+d_BIN=bin
+d_HDIR=headers
 
-TODIR=test_obj
-TCDIR=test_src
+d_MOD=src/modules
+d_APP=src/apps
+d_objMOD=obj/modules
+d_objAPP=obj/apps
 
-SRCFILES := $(wildcard $(CDIR)/*.c)
-OBJFILES := $(patsubst $(CDIR)/%.c,$(ODIR)/%.o,$(SRCFILES))
-OUTPUT := $(BIN)/wav_parser
+OUT = $(addprefix $(d_BIN)/,$(applist))
+srcAPP = $(wildcard $(d_APP)/*.c)
+srcMOD = $(wildcard $(d_MOD)/*.c)
+applist = $(notdir $(basename $(srcAPP)))
+modlist = $(notdir $(basename $(srcMOD)))
+objAPP = $(addsuffix .o,$(addprefix $(d_objAPP)/,$(applist)))
+objMOD = $(addsuffix .o,$(addprefix $(d_objMOD)/,$(modlist)))
 
-all: $(OUTPUT)
+all: $(OUT)
 
-testing_utils: 
-	@echo Compiling into objects
-	$(CC) $(CFLAGS) -c $(CDIR)/utils.c -o $(ODIR)/utils.o 
-	$(CC) $(CFLAGS) -c $(TCDIR)/testing_utils.c -o $(TODIR)/testing_utils.o
-	@echo Linking
-	$(CC) $(CLFLAGS) $(TODIR)/testing_utils.o $(ODIR)/utils.o -o $(BIN)/utest 
+$(OUT): $(objAPP) $(objMOD)
+	$(CC) $(CFLAGS) -o $@ $(addprefix $(d_objAPP)/,$(addsuffix .o,$(notdir $(basename $@)))) $(objMOD)
+#	$(CC) $(CFLAGS) -o $(addprefix $(d_BIN)/,$(notdir $(basename $<))) $(objMOD)
 
+#oapp: $(objAPP)
+$(objAPP): $(srcAPP)
+	$(CC) $(CFLAGS) -c $(addprefix $(d_APP)/, $(addsuffix .c,$(notdir $(basename $@)))) -o $@
 
-# source to obj
-$(ODIR)/%.o: $(CDIR)/%.c
-	@echo Compiling source files into object files.
-	$(CC) $(CFLAGS) -c $< -o $@
+#omod: $(objMOD)
+$(objMOD): $(srcMOD)
+#	@echo $(addprefix $(d_MOD)/, $(addsuffix .c,$(notdir $(basename $@))))
+	$(CC) $(CFLAGS) -c $(addprefix $(d_MOD)/, $(addsuffix .c,$(notdir $(basename $@)))) -o $@
 
-# linking
-$(OUTPUT): $(OBJFILES)
-	@echo Linking object files.
-	$(CC) $(CFLAGS) $^ -o $@
+#initdir:
 
 clean:
 	@echo Cleaning.
-	rm -rf $(ODIR)/* $(BIN)/* $(TODIR)/* $(OUT)/*
+	rm -rf $(d_BIN)/* $(d_objAPP)/* $(d_objMOD)/*
+
+.PHONY: all clean initdir

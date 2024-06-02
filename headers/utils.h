@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include "exit_messages.h"
 
 #define read_sample(f, b) read_little_endian(f, b)
 #define __FREE_FILEPATH(p) ({if (p != NULL) free_filepath(&p);})

@@ -1,5 +1,4 @@
-#include "../headers/utils.h"
-#include "../headers/exit_messages.h"
+#include "../../headers/utils.h"
 
 int32_t
 read_little_endian(FILE *file, uint8_t bits) {

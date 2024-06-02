@@ -1,6 +1,4 @@
-#include "../headers/subchunks.h"
-#include "../headers/utils.h"
-#include "../headers/exit_messages.h"
+#include "../../headers/subchunks.h"
 
 typedef struct _metadata_node *metadata_list;
 

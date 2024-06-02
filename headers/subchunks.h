@@ -6,6 +6,8 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <assert.h>
+#include "utils.h"
+#include "exit_messages.h"
 
 #define INFO_LE 0x4F464E49
 
