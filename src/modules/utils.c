@@ -46,7 +46,9 @@ get_filepath(const char *dir, const char *fileName) {
 	if (dir == NULL || fileName == NULL)
 		exit_error(PASSED_NULL_POINTER);
 
-	size_t size = strlen(dir) + strlen(fileName) + 1;
+	size_t s_dir = strnlen_s(dir, 62);
+	size_t s_fname = strnlen_s(fileName, 62);
+	size_t size = s_dir + s_fname + 1;
 
 	char *filePath = malloc(size);
 
@@ -55,7 +57,7 @@ get_filepath(const char *dir, const char *fileName) {
 	
 	memset(filePath, '\0', size);
 	strcpy(filePath, dir);
-	strcat(filePath, fileName);
+	strncat(filePath, fileName, size);
 
 	return (const char*)filePath;
 }

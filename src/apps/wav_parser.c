@@ -7,7 +7,6 @@
 #include "../../headers/data_processing.h"
 #include "../../headers/utils.h"
 #include "../../headers/exit_messages.h"
-//#include "../../headers/file_creation.h"
 
 int main(int argc, char *argv[]) {
 	char directory[14] = "../wav-files/";
