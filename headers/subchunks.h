@@ -11,15 +11,34 @@
 
 #define INFO_LE 0x4F464E49
 
-#define __FREE_RIFF(r) ({if (r != NULL) free_riff_chunk(&r);})
-#define __FREE_FMT(f) ({if (f != NULL) free_fmt_subchunk(&f);})
-#define __FREE_DATA(d) ({if (d != NULL) free_data_header(&d);})
+//#define __FREE_RIFF(r) ({if (r != NULL) free_riff_chunk(&r);})
+//#define __FREE_FMT(f) ({if (f != NULL) free_fmt_subchunk(&f);})
+//#define __FREE_DATA(d) ({if (d != NULL) free_data_header(&d);})
 #define __FREE_METADATA(d) ({if (d != NULL) free_metadata(&d);})
 		
+typedef struct {
+	char ChunkID[4];
+	uint32_t ChunkSize; //  This is the size of the entire file in bytes minus 8 bytes for
+			    //  the two fields not included in this count: ChunkID and ChunkSize.
+	char Format[4];
+} riff_t;
 
-typedef struct _riff_chunk *riff_t;
-typedef struct _fmt_subchunk *fmt_t;
-typedef struct _data_header *data_t;
+typedef struct {
+	char Subchunk1ID[4];
+	uint32_t Subchunk1Size;
+	uint16_t AudioFormat;
+	uint16_t NumChannels;
+	uint32_t SampleRate;
+	uint32_t ByteRate;
+	uint16_t BlockAlign;
+	uint16_t BitsPerSample;
+} fmt_t;
+
+typedef struct {
+	char Subchunk2ID[4];
+	uint32_t Subchunk2Size;
+} data_t;
+
 typedef struct _metadata_head *metadata_t;
 
 /* Memory allocation and freeing */
@@ -33,9 +52,9 @@ riff_t new_riff(uint32_t ChunkSize);
 fmt_t new_fmt(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels, uint32_t SampleRate, uint16_t BitsPerSample);
 data_t new_datahead(uint32_t Subchunk2Size);
 
-void free_riff_chunk(riff_t* r);
-void free_fmt_subchunk(fmt_t* fmt);
-void free_data_header(data_t* d);
+//void free_riff_chunk(riff_t* r);
+//void free_fmt_subchunk(fmt_t* fmt);
+//void free_data_header(data_t* d);
 void free_metadata(metadata_t* m);
 
 /* Prints and debugs */

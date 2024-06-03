@@ -2,29 +2,6 @@
 
 typedef struct _metadata_node *metadata_list;
 
-struct _riff_chunk {
-	char ChunkID[4];
-	uint32_t ChunkSize; //  This is the size of the entire file in bytes minus 8 bytes for
-			    //  the two fields not included in this count: ChunkID and ChunkSize.
-	char Format[4];
-};
-
-struct _fmt_subchunk {
-	char Subchunk1ID[4];
-	uint32_t Subchunk1Size;
-	uint16_t AudioFormat;
-	uint16_t NumChannels;
-	uint32_t SampleRate;
-	uint32_t ByteRate;
-	uint16_t BlockAlign;
-	uint16_t BitsPerSample;
-};
-
-struct _data_header {
-	char Subchunk2ID[4];
-	uint32_t Subchunk2Size;
-};
-
 struct _metadata_node {
 	char code[4];
 	uint32_t infoSize;
@@ -41,7 +18,7 @@ struct _metadata_head {
 };
 
 /* Memory allocation and freeing */
-
+/*
 static riff_t
 alloc_riff_chunk() {
 	riff_t riff = NULL;
@@ -62,36 +39,37 @@ alloc_data_header() {
 	d = malloc(sizeof(struct _data_header));
 	return d;
 }
+*/
 
 riff_t
 get_riff(FILE *file) {
-	riff_t r = alloc_riff_chunk();
-	for (int i=0; i<4; i++) r->ChunkID[i] = fgetc(file);
-	r->ChunkSize = read_little_endian(file, 32);
-	for (int i=0; i<4; i++) r->Format[i] = fgetc(file);
+	riff_t r;
+	for (int i=0; i<4; i++) r.ChunkID[i] = fgetc(file);
+	r.ChunkSize = read_little_endian(file, 32);
+	for (int i=0; i<4; i++) r.Format[i] = fgetc(file);
 	return r;
 }
 
 fmt_t
 get_fmt(FILE *file) {
-	fmt_t fmt = alloc_fmt_subchunk();
+	fmt_t fmt;
 	fseek(file, 12, SEEK_SET);
 
-	for (int i=0; i<4; i++) fmt->Subchunk1ID[i] = fgetc(file);
+	for (int i=0; i<4; i++) fmt.Subchunk1ID[i] = fgetc(file);
 
-	fmt->Subchunk1Size = (uint32_t)read_little_endian(file, 32);
-	fmt->AudioFormat = (uint16_t)(read_little_endian(file, 16));
-	fmt->NumChannels = (uint16_t)(read_little_endian(file, 16));
-	fmt->SampleRate = (uint32_t)read_little_endian(file, 32);
-	fmt->ByteRate = (uint32_t)read_little_endian(file, 32);
-	fmt->BlockAlign = (uint16_t)(read_little_endian(file, 16));
-	fmt->BitsPerSample = (uint16_t)(read_little_endian(file, 16));
+	fmt.Subchunk1Size = (uint32_t)read_little_endian(file, 32);
+	fmt.AudioFormat = (uint16_t)(read_little_endian(file, 16));
+	fmt.NumChannels = (uint16_t)(read_little_endian(file, 16));
+	fmt.SampleRate = (uint32_t)read_little_endian(file, 32);
+	fmt.ByteRate = (uint32_t)read_little_endian(file, 32);
+	fmt.BlockAlign = (uint16_t)(read_little_endian(file, 16));
+	fmt.BitsPerSample = (uint16_t)(read_little_endian(file, 16));
 
 	// CHECKS
-	if (fmt->BlockAlign != (fmt->NumChannels * fmt->BitsPerSample/8))
+	if (fmt.BlockAlign != (fmt.NumChannels * fmt.BitsPerSample/8))
 		exit_error(BLOCK_ALIGN_TEST_FAIL);
 
-	if (fmt->ByteRate != (fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8))
+	if (fmt.ByteRate != (fmt.SampleRate * fmt.NumChannels * fmt.BitsPerSample/8))
 		exit_error(BYTE_RATE_TEST_FAIL);
 
 	return fmt;
@@ -99,20 +77,20 @@ get_fmt(FILE *file) {
 
 data_t
 get_datahead(FILE *file, int32_t *start) {
-	data_t d = alloc_data_header();
+	data_t d;
 	int32_t dataStart = 35;
 
 	fseek(file, 36, SEEK_SET);
 
 	do {
 		dataStart++;
-		d->Subchunk2ID[0] = fgetc(file);
-	} while (d->Subchunk2ID[0] != 'd');
+		d.Subchunk2ID[0] = fgetc(file);
+	} while (d.Subchunk2ID[0] != 'd');
 
-	for (int i=1; i<4; i++) d->Subchunk2ID[i] = fgetc(file);
+	for (int i=1; i<4; i++) d.Subchunk2ID[i] = fgetc(file);
 	dataStart += 4;
 
-	d->Subchunk2Size = read_little_endian(file, 32);
+	d.Subchunk2Size = read_little_endian(file, 32);
 
 	if (start != NULL) *start = dataStart;
 	return d;
@@ -201,44 +179,45 @@ get_metadata(FILE *file) {
 
 riff_t
 new_riff(uint32_t ChunkSize) {
-	riff_t r = alloc_riff_chunk();
+	riff_t r;
 	char *id = "RIFF";
 	for (int i=0; i<4; i++)
-		r->ChunkID[i] = id[i];
-	r->ChunkSize = ChunkSize;
+		r.ChunkID[i] = id[i];
+	r.ChunkSize = ChunkSize;
 	return r;
 }
 
 fmt_t
 new_fmt(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels, uint32_t SampleRate, uint16_t BitsPerSample) {
-	fmt_t fmt = alloc_fmt_subchunk();
+	fmt_t fmt;
 	char *id = "fmt\040";
 	for (int i=0; i<4; i++)
-		fmt->Subchunk1ID[i] = id[i];
+		fmt.Subchunk1ID[i] = id[i];
 
-	fmt->Subchunk1Size = Subchunk1Size;
-	fmt->AudioFormat = AudioFormat;
-	fmt->NumChannels = NumChannels;
-	fmt->SampleRate = SampleRate;
-	fmt->BitsPerSample = BitsPerSample;
+	fmt.Subchunk1Size = Subchunk1Size;
+	fmt.AudioFormat = AudioFormat;
+	fmt.NumChannels = NumChannels;
+	fmt.SampleRate = SampleRate;
+	fmt.BitsPerSample = BitsPerSample;
 	
-	fmt->BlockAlign = fmt->NumChannels * fmt->BitsPerSample/8;
-	fmt->ByteRate = fmt->SampleRate * fmt->NumChannels * fmt->BitsPerSample/8;
+	fmt.BlockAlign = fmt.NumChannels * fmt.BitsPerSample/8;
+	fmt.ByteRate = fmt.SampleRate * fmt.NumChannels * fmt.BitsPerSample/8;
 
 	return fmt;
 }
 
 data_t new_datahead(uint32_t Subchunk2Size) {
-	data_t d = alloc_data_header();
+	data_t d;
 	char *id = "data";
 	
 	for (int i=0; i<4; i++)
-		d->Subchunk2ID[i] = id[i];
-	d->Subchunk2Size = Subchunk2Size;
+		d.Subchunk2ID[i] = id[i];
+	d.Subchunk2Size = Subchunk2Size;
 
 	return d;
 }
 
+/*
 void
 free_riff_chunk(riff_t* r) {
 	free(*r);
@@ -259,6 +238,7 @@ free_data_header(data_t* d) {
 	*d = NULL;
 	return;
 }
+*/
 
 void
 free_metadata(metadata_t *m) {
@@ -279,18 +259,18 @@ free_metadata(metadata_t *m) {
 
 void
 print_riff_chunk(riff_t r) {
-	if (r == NULL) 
-		return;
+	//if (r == NULL) 
+	//	return;
 
 	printf("---RIFF CHUNK\n");
 	printf("ChunkID: ");
-	for (int i=0; i<4; i++) printf("%c", r->ChunkID[i]);
+	for (int i=0; i<4; i++) printf("%c", r.ChunkID[i]);
 	printf("\n");
 
-	printf("ChunkSize: %" PRIu32 "\n", r->ChunkSize);
+	printf("ChunkSize: %" PRIu32 "\n", r.ChunkSize);
 
 	printf("Format: ");
-	for (int i=0; i<4; i++) printf("%c", r->Format[i]);
+	for (int i=0; i<4; i++) printf("%c", r.Format[i]);
 	printf("\n");
 
 	return;
@@ -298,36 +278,36 @@ print_riff_chunk(riff_t r) {
 
 void
 print_fmt_subchunk(fmt_t fmt) {
-	if (fmt == NULL)
-		return;
+	//if (fmt == NULL)
+	//	return;
 
 	printf("---FMT SUBCHUNK\n");
 	printf("Subchunk1ID: ");
-	for (int i=0; i<4; i++) printf("%c", fmt->Subchunk1ID[i]);
+	for (int i=0; i<4; i++) printf("%c", fmt.Subchunk1ID[i]);
 	printf("\n");
 
-	printf("Subchunk1Size %" PRIu32 "\n", fmt->Subchunk1Size);
-	printf("AudioFormat %" PRIu16 "\n", fmt->AudioFormat);
-	printf("NumChannels %" PRIu16 "\n", fmt->NumChannels);
-	printf("SampleRate %" PRIu32 "\n", fmt->SampleRate);
-	printf("ByteRate %" PRIu32 "\n", fmt->ByteRate);
-	printf("BlockAlign %" PRIu16 "\n", fmt->BlockAlign);
-	printf("BitsPerSample %" PRIu16 "\n", fmt->BitsPerSample);
+	printf("Subchunk1Size %" PRIu32 "\n", fmt.Subchunk1Size);
+	printf("AudioFormat %" PRIu16 "\n", fmt.AudioFormat);
+	printf("NumChannels %" PRIu16 "\n", fmt.NumChannels);
+	printf("SampleRate %" PRIu32 "\n", fmt.SampleRate);
+	printf("ByteRate %" PRIu32 "\n", fmt.ByteRate);
+	printf("BlockAlign %" PRIu16 "\n", fmt.BlockAlign);
+	printf("BitsPerSample %" PRIu16 "\n", fmt.BitsPerSample);
 	return;
 }
 
 void
 print_data_header(data_t d) {
-	if (d == NULL)
-		return;
+	//if (d == NULL)
+	//	return;
 
 	printf("---DATA HEADER\n");
 
 	printf("Subchunk2ID: ");
-	for (int i=0; i<4; i++) printf("%c", d->Subchunk2ID[i]);
+	for (int i=0; i<4; i++) printf("%c", d.Subchunk2ID[i]);
 	printf("\n");
 
-	printf("Subchunk2Size: %" PRIu32 "\n", d->Subchunk2Size);
+	printf("Subchunk2Size: %" PRIu32 "\n", d.Subchunk2Size);
 	return;
 }
 
@@ -350,23 +330,19 @@ print_metadata(metadata_t h) {
 
 uint32_t 
 riff_size(riff_t r) {
-	if (r == NULL)
-		exit_error(PASSED_NULL_POINTER);
-	return r->ChunkSize;
+	return r.ChunkSize;
 }
 
 uint16_t 
 audio_format(fmt_t f) {
-	if (f == NULL)
-		exit_error(PASSED_NULL_POINTER);
-	return f->AudioFormat;
+	return f.AudioFormat;
 }
 
 uint32_t 
 file_size(FILE *f) {
 	riff_t r = get_riff(f);
 	uint32_t size = 8 +riff_size(r);
-	__FREE_RIFF(r);
+	//__FREE_RIFF(r);
 	return size;
 }
 
@@ -375,9 +351,7 @@ file_size(FILE *f) {
 
 uint32_t
 audio_size(data_t d) {
-	if (d == NULL)
-		exit_error(PASSED_NULL_POINTER);
-	return d->Subchunk2Size;
+	return d.Subchunk2Size;
 }
 
 uint32_t 
@@ -397,7 +371,7 @@ metadata_size(metadata_t m) {
 
 uint16_t
 bits_per_sample(fmt_t fmt) {
-	return fmt->BitsPerSample;
+	return fmt.BitsPerSample;
 }
 
 /* Operations */
@@ -409,7 +383,7 @@ calc_riff_size(fmt_t fmt, data_t d, metadata_t m) {
 
 void 
 set_riff_size(riff_t r, uint32_t size) {
-	r->ChunkSize = size;
+	r.ChunkSize = size;
 }
 
 /* Writing to file */
@@ -417,7 +391,7 @@ set_riff_size(riff_t r, uint32_t size) {
 void
 write_riff(FILE *file, riff_t r) {
 	assert(file != NULL);
-	assert(r != NULL);
+	//assert(r != NULL);
 
 	fseek(file, 0, SEEK_SET);
 
@@ -425,7 +399,7 @@ write_riff(FILE *file, riff_t r) {
 	for (int i=0; i<4; i++)
 		fputc(tmpstr[i], file);
 
-	write_little_endian(file, (int32_t)r->ChunkSize, 32);	
+	write_little_endian(file, (int32_t)r.ChunkSize, 32);	
 
 	tmpstr = "WAVE";
 	for (int i=0; i<4; i++)
@@ -435,7 +409,7 @@ write_riff(FILE *file, riff_t r) {
 void
 write_fmt(FILE *file, fmt_t fmt) {
 	assert(file != NULL);
-	assert(fmt != NULL);
+	//assert(fmt != NULL);
 
 	fseek(file, 12, SEEK_SET);
 
@@ -445,18 +419,18 @@ write_fmt(FILE *file, fmt_t fmt) {
 
 	write_little_endian(file, 16, 32);
 
-	write_little_endian(file, (uint32_t)fmt->AudioFormat, 16);
-	write_little_endian(file, (uint32_t)fmt->NumChannels, 16);
-	write_little_endian(file, (uint32_t)fmt->SampleRate, 32);
-	write_little_endian(file, (uint32_t)fmt->ByteRate, 32);
-	write_little_endian(file, (uint32_t)fmt->BlockAlign, 16);
-	write_little_endian(file, (uint32_t)fmt->BitsPerSample, 16);
+	write_little_endian(file, (uint32_t)fmt.AudioFormat, 16);
+	write_little_endian(file, (uint32_t)fmt.NumChannels, 16);
+	write_little_endian(file, (uint32_t)fmt.SampleRate, 32);
+	write_little_endian(file, (uint32_t)fmt.ByteRate, 32);
+	write_little_endian(file, (uint32_t)fmt.BlockAlign, 16);
+	write_little_endian(file, (uint32_t)fmt.BitsPerSample, 16);
 }
 
 void
 write_data(FILE *file, data_t d) {
 	assert(file != NULL);
-	assert(d != NULL);
+	//assert(d != NULL);
 
 	fseek(file, 36, SEEK_SET);
 
@@ -464,7 +438,7 @@ write_data(FILE *file, data_t d) {
 	for (int i=0; i<4; i++)
 		fputc(tmpstr[i], file);
 
-	write_little_endian(file, d->Subchunk2Size, 32);
+	write_little_endian(file, d.Subchunk2Size, 32);
 }
 
 void

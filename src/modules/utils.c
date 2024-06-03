@@ -46,8 +46,8 @@ get_filepath(const char *dir, const char *fileName) {
 	if (dir == NULL || fileName == NULL)
 		exit_error(PASSED_NULL_POINTER);
 
-	size_t s_dir = strnlen_s(dir, 62);
-	size_t s_fname = strnlen_s(fileName, 62);
+	size_t s_dir = strlen(dir);//strnlen_s(dir, 62);
+	size_t s_fname = strlen(fileName);//strnlen_s(fileName, 62);
 	size_t size = s_dir + s_fname + 1;
 
 	char *filePath = malloc(size);

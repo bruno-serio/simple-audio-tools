@@ -33,9 +33,9 @@ int main(int argc, char *argv[]) {
 	printf("Peak: %d\n", __GET_ABS_PEAK(audioFile));
 
 	fclose(audioFile);
-	__FREE_RIFF(RIFF);
-	__FREE_FMT(FMT);	
-	__FREE_DATA(dataHeader);
+	//__FREE_RIFF(RIFF);
+	//__FREE_FMT(FMT);	
+	//__FREE_DATA(dataHeader);
 	__FREE_METADATA(mdhead);
 	return 0;
 }
