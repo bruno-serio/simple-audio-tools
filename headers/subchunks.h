@@ -43,13 +43,77 @@ typedef struct _metadata_head *metadata_t;
 
 /* Memory allocation and freeing */
 
+//	==================================================
+/**
+ * \brief	Reads the \b Riff Chunk data from the input wave file.
+ * \param[in]   file The file that is read.
+ * \return	\c riff_t struct with \c ChunkID , \c ChunkSize and \c Format.
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ * \pre		\c FILE* \c f is \b not \c NULL.
+ */
 riff_t get_riff(FILE *file);
-fmt_t get_fmt(FILE *file);
-data_t get_datahead(FILE *file, int32_t *start);
-metadata_t get_metadata(FILE *file);
+//	==================================================
 
+//	==================================================
+/**
+ * \brief	Reads the \b FMT Subchunk data from the input wave file.
+ * \param[in]   file The file that is read.
+ * \return	\c fmt_t struct with \c Subchunk1ID , \c Subchunk1Size , \c AudioFormat , \c NumChannels , \c SampleRate , \c ByteRate , \c BlockAlign and \c BitsPerSample .
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ * \pre		\c FILE* \c f is \b not \c NULL.
+ */
+fmt_t get_fmt(FILE *file);
+//	==================================================
+
+//	==================================================
+/**
+ * \brief	Reads the \b Data Subchunk \a header data from the input wave file.
+ * \param[in]   file The file that is read.
+ * \return	\c data_t struct with \c Subchunk2ID and \c Subchunk2Size .
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ * \pre		\c FILE* \c f is \b not \c NULL.
+ */
+data_t get_datahead(FILE *file, int32_t *start);
+//	==================================================
+
+//	==================================================
+/**
+ * \brief	Reads the \b metadata from the input wave file.
+ * \param[in]   file The file that is read.
+ * \return	\c metadata_t pointer to a structure that holds all metadata information.
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ * \pre		\c FILE* \c f is \b not \c NULL.
+ * \post	\b Heap-allocates memory.
+ */
+metadata_t get_metadata(FILE *file);
+//	==================================================
+
+//	==================================================
+/**
+ * \brief	Creates a \c riff_t struct with the given \c ChunkSize .
+ * \param[in]   ChunkSize The size of the entire file in bytes \c -8.
+ * \return	\c riff_t struct with \c ChunkID , \c ChunkSize and \c Format.
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ */
 riff_t new_riff(uint32_t ChunkSize);
+//	==================================================
+
+//	==================================================
+/**
+ * \brief	Creates a \c fmt_t struct with the data from all fields except the checks, which are auto-calculated.
+ * \return	\c fmt_t struct with \c Subchunk1ID , \c Subchunk1Size , \c AudioFormat , \c NumChannels , \c SampleRate , \c ByteRate , \c BlockAlign and \c BitsPerSample .
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ */
 fmt_t new_fmt(uint32_t Subchunk1Size, uint16_t AudioFormat, uint16_t NumChannels, uint32_t SampleRate, uint16_t BitsPerSample);
+//	==================================================
+
+//	==================================================
+/**
+ * \brief	Creates a \c data_t struct with the given \c Subchunk2Size . 
+ * \param[in]   Subchunk2Size The size of the data (which is the size of the subchunk starting after this).
+ * \return	\c data_t struct with \c Subchunk2ID and \c Subchunk2Size .
+ * \headerfile	subchunks.h "SUBCHUNKS header"
+ */
 data_t new_datahead(uint32_t Subchunk2Size);
 
 //void free_riff_chunk(riff_t* r);
