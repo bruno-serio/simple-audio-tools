@@ -338,6 +338,16 @@ audio_format(fmt_t f) {
 	return f.AudioFormat;
 }
 
+uint32_t
+audio_size(data_t d) {
+	return d.Subchunk2Size;
+}
+
+uint16_t
+bits_per_sample(fmt_t fmt) {
+	return fmt.BitsPerSample;
+}
+
 uint32_t 
 file_size(FILE *f) {
 	riff_t r = get_riff(f);
@@ -348,11 +358,6 @@ file_size(FILE *f) {
 
 // uint32_t fmt_size(fmt_t t) {
 // }
-
-uint32_t
-audio_size(data_t d) {
-	return d.Subchunk2Size;
-}
 
 uint32_t 
 metadata_size(metadata_t m) {
@@ -368,11 +373,6 @@ metadata_size(metadata_t m) {
 // byte_rate(fmt_t fmt) {
 // 	return (fmt != NULL) ? fmt->SampleRate : 0;
 // }
-
-uint16_t
-bits_per_sample(fmt_t fmt) {
-	return fmt.BitsPerSample;
-}
 
 /* Operations */
 
