@@ -77,8 +77,6 @@ get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 		if (sample < min) min = sample;
 	}
 
-	__FREE_FMT(fmt);
-	__FREE_DATA(d);
 	return ((max >= (-min)) ? max : -(min+1));
 }
 

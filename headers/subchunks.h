@@ -200,12 +200,11 @@ uint32_t metadata_size(metadata_t m);
 //	==================================================
 /**
  * \brief	Calculates the required riff size given the size of the other subchunks.
- * \param[in]   fmt The fmt_t struct. 
  * \param[in]   d   The data_t header struct. 
  * \param[in]   m   The metadata_t header struct. 
  * \return	\c uint32_t with the appropiate size.
  */
-uint32_t calc_riff_size(fmt_t fmt, data_t d, metadata_t m);
+uint32_t calc_riff_size(data_t d, metadata_t m);
 //	==================================================
 
 void set_riff_size(riff_t r, uint32_t size);

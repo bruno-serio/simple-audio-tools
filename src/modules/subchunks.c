@@ -377,7 +377,7 @@ metadata_size(metadata_t m) {
 /* Operations */
 
 uint32_t
-calc_riff_size(fmt_t fmt, data_t d, metadata_t m) {
+calc_riff_size(data_t d, metadata_t m) {
 	return (36 + audio_size(d) + metadata_size(m));
 }
 

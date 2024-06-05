@@ -1,5 +1,21 @@
 #include "../../headers/utils.h"
 
+size_t
+b43_strlen_b(char* str, size_t byteBound) {
+	size_t s=0;
+	for (; s+1 < byteBound && str[s] != '\0'; s++);
+	return (s!=0) ? s+1 : 0;
+}
+
+void
+b43_strcat_b(char* str1, char* str2, size_t size1, size_t size2) {
+	size_t i, j;
+	for (i=0; i+1 < size1 && str1[i] != '\0'; i++);
+	for (j=0; j+1 < size2 && i+j+1 < size1 && str2[j] != '\0'; j++)
+		str1[i+j] = str2[j];
+	str1[i+j+1] = '\0';
+}
+
 int32_t
 read_little_endian(FILE *file, uint8_t bits) {
 	if (bits % 8 != 0)

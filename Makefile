@@ -38,4 +38,4 @@ clean:
 	@echo Cleaning.
 	rm -rf $(d_BIN)/* $(d_objAPP)/* $(d_objMOD)/*
 
-.PHONY: all clean initdir
+.PHONY: all clean init_dir

@@ -28,13 +28,11 @@ slice_audio_file(FILE* f, int32_t start, int32_t end, uint16_t BitsPerSample) {
 	if (start == MIN_I32S && end == MIN_I32S) {
 		data_t d = get_datahead(f, &start);
 		end = (int32_t)audio_size(d); // might need a check for overflow since audio_size(d) returns uint32_t
-		__FREE_DATA(d);
 	}
 
 	if (BitsPerSample == 0) {
 		fmt_t fmt = get_fmt(f);
 		BitsPerSample = bits_per_sample(fmt);
-		__FREE_FMT(fmt);
 	}
 
 	return new_fslice(f, end-start, start, BitsPerSample);
@@ -66,7 +64,7 @@ append_metadata(FILE* f, const char* path, metadata_t m, bool write_head) {
 	riff_t r = get_riff(f);
 	fmt_t fmt = get_fmt(f);
 	data_t d = get_datahead(f, NULL);
-	uint32_t req_riffsize = calc_riff_size(fmt, d, m);
+	uint32_t req_riffsize = calc_riff_size(d, m);
 
 	if (req_riffsize != riff_size(r)) {
 		const char* tempPath = get_filepath(path, "__temp__");
