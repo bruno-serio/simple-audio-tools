@@ -3,8 +3,9 @@ CFLAGS= -Wall -Wextra
 
 d_BIN=bin
 d_HDIR=headers
-d_src=src
-d_obj=obj
+#d_src=src
+#d_obj=obj
+d_OUTPUT=output
 
 d_MOD=src/modules
 d_APP=src/apps
@@ -21,7 +22,7 @@ objMOD = $(addsuffix .o,$(addprefix $(d_objMOD)/,$(modlist)))
 
 all: $(OUT)
 
-$(OUT): $(d_MOD) $(d_APP) $(d_objMOD) $(d_objAPP) $(objAPP) $(objMOD)
+$(OUT): $(d_OUTPUT) $(d_MOD) $(d_APP) $(d_objMOD) $(d_objAPP) $(objAPP) $(objMOD)
 	$(CC) $(CFLAGS) -o $@ $(addprefix $(d_objAPP)/,$(addsuffix .o,$(notdir $(basename $@)))) $(objMOD)
 #	$(CC) $(CFLAGS) -o $(addprefix $(d_BIN)/,$(notdir $(basename $<))) $(objMOD)
 
@@ -42,6 +43,8 @@ $(d_objMOD):
 	mkdir -p $(d_objMOD)
 $(d_objAPP): 
 	mkdir -p $(d_objAPP)
+$(d_OUTPUT):
+	mkdir $(d_OUTPUT)
 
 clean:
 	@echo Cleaning.

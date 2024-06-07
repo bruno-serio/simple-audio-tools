@@ -13,21 +13,27 @@ int main(int argc, char* argv[]) {
 	if (argc < 2) 
 		return 1;
 
-	const char* filePath = get_filepath("../wav-files/", argv[1]);
-	FILE* wavFile = fopen(filePath, "rb");
+	const char* sourcePath = get_filepath("../wav-files/", argv[1]);
+	FILE* wavFile = fopen(sourcePath, "rb");
 	fmt_t FMT = get_fmt(wavFile);
 	uint32_t audioSize = file_size(wavFile);
 	uint32_t audioOffset = audio_start(wavFile);	//audio_start() to be implemented.
-	
 	file_slice wavSlice = new_fslice(wavFile, audioSize, audioOffset, FMT.BitsPerSample);
-
+	
 	int32_t wavPeak = get_abs_peak(wavFile, FMT.BitsPerSample);
 	float scalingRatio = normalize_ratio(wavPeak, FMT.BitsPerSample);
 
-	scale_fslice(wavSlice, scalingRatio);		//scale_fslice() to be implemented
+	const char* destPath = get_filepath("../output/", argv[1]);
+	FILE* outFile = fopen(sourcePath, "rb");
+
+	// copy RIFF, FMT, DATA HEADER
+
+	write_scaled_fslice(wavSlice, scalingRatio, outFile);		//scale_fslice() to be implemented
+
+	// copy METADATA
 
 	fclose(wavFile);
 	__FREE_FSLICE(wavSlice, false);
-	__FREE_FILEPATH(filePath);
+	__FREE_FILEPATH(sourcePath);
 	return 0;
 }

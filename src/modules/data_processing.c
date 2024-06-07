@@ -127,5 +127,5 @@ int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample) {
 }
 
 void
-scale_fslice(file_slice f, float ratio) {
+write_scaled_fslice(file_slice f, float ratio, FILE* out) {
 }

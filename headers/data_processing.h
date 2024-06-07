@@ -28,6 +28,6 @@ float normalize_ratio(int32_t peak, uint16_t BitsPerSample);
 int32_t scale_sample(int32_t sample, float ratio);  
 int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample);	
 
-void scale_fslice(file_slice f, float ratio);	// TO BE DONE
+void write_scaled_fslice(file_slice fs, float ratio, FILE* out);	// TO BE DONE
 
 #endif // _DATA_PROCESSING_H_
