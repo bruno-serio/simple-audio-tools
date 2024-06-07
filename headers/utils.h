@@ -10,9 +10,6 @@
 #define read_sample(f, b) read_little_endian(f, b)
 #define __FREE_FILEPATH(p) ({if (p != NULL) free_filepath(&p);})
 
-size_t b43_strlen_b(char* str, size_t byteBound);
-void b43_strcat_b(char* str1, char* str2, size_t size1, size_t size2);
-
 int32_t read_little_endian(FILE *file, uint8_t bits);
 int32_t read_big_endian(FILE *file, uint8_t bits);
 

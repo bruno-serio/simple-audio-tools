@@ -68,7 +68,7 @@ append_metadata(FILE* f, const char* path, metadata_t m, bool write_head) {
 
 	if (req_riffsize != riff_size(r)) {
 		const char* tempPath = get_filepath(path, "__temp__");
-		set_riff_size(r, req_riffsize);
+		r.ChunkSize = req_riffsize;
 		FILE* n = write_file_header(tempPath, r, fmt, d);
 		file_slice s = __SLICE_AUDIO_FILE(f);
 		copy_audio(s, n, NULL);

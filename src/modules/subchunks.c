@@ -328,6 +328,11 @@ print_metadata(metadata_t h) {
 
 /* Input and output */
 
+int32_t 
+audio_start(FILE* f) {
+	return 0;
+}
+
 uint32_t 
 riff_size(riff_t r) {
 	return r.ChunkSize;
@@ -381,10 +386,10 @@ calc_riff_size(data_t d, metadata_t m) {
 	return (36 + audio_size(d) + metadata_size(m));
 }
 
-void 
-set_riff_size(riff_t r, uint32_t size) {
-	r.ChunkSize = size;
-}
+// void 
+// set_riff_size(riff_t r, uint32_t size) {
+// 	r.ChunkSize = size;
+// }
 
 /* Writing to file */
 

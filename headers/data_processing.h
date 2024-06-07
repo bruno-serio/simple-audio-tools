@@ -22,10 +22,12 @@ uint32_t fslice_len(file_slice s);
 int32_t fslice_offset(file_slice s);
 uint16_t fslice_bits(file_slice s);
 
-int16_t get_abs_peak(FILE *file, uint16_t BitsPerSample);
+int32_t get_abs_peak(FILE *file, uint16_t BitsPerSample);
 float normalize_ratio(int32_t peak, uint16_t BitsPerSample);  
 
 int32_t scale_sample(int32_t sample, float ratio);  
 int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample);	
+
+void scale_fslice(file_slice f, float ratio);	// TO BE DONE
 
 #endif // _DATA_PROCESSING_H_

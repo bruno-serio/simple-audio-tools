@@ -58,7 +58,7 @@ fslice_bits(file_slice s) {
 	return s->BitsPerSample;
 }
 
-int16_t
+int32_t
 get_abs_peak(FILE *file, uint16_t BitsPerSample) {
 	int16_t max = 0;
 	int16_t min = 0;
@@ -124,4 +124,8 @@ int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample) {
 		return (sample >= (max - offset)) ? max : sample + offset;
 	else
 		return (sample <= (min - offset)) ? min : sample + offset;
+}
+
+void
+scale_fslice(file_slice f, float ratio) {
 }

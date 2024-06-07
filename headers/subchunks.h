@@ -48,7 +48,11 @@ typedef struct {
 	uint32_t Subchunk2Size;
 } data_t;
 
-typedef struct _metadata_head *metadata_t;
+/**
+ * \typedef metadata_t
+ * Pointer to private metadata structure.
+ */
+typedef struct _metadata_head* metadata_t;
 
 /* Memory allocation and freeing */
 
@@ -168,6 +172,15 @@ void print_metadata(metadata_t h);
 
 /* Input and output */
 
+/**
+ * \brief	Returns the byte offset of the actual audio sample information, needed \
+  		for other functions/procedures such as data_processing > file_slice new_fslice
+ * \param[in]   f Pointer to the wav file.
+ * \return	Number of bytes before the sample (which is the same as the header size).
+ * \warning	NOT YET IMPLEMENTED.
+ */
+int32_t audio_start(FILE* f);
+
 uint32_t riff_size(riff_t r);
 uint16_t audio_format(fmt_t f);
 uint32_t audio_size(data_t d);
@@ -207,7 +220,7 @@ uint32_t metadata_size(metadata_t m);
 uint32_t calc_riff_size(data_t d, metadata_t m);
 //	==================================================
 
-void set_riff_size(riff_t r, uint32_t size);
+//void set_riff_size(riff_t r, uint32_t size);
 
 /* Writing to file */
 
