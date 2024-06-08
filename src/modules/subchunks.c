@@ -330,7 +330,15 @@ print_metadata(metadata_t h) {
 
 int32_t 
 audio_start(FILE* f) {
-	return 0;
+	int32_t d = 35;
+	char t = 'a';
+	fseek(f, 36, SEEK_SET);
+	do {
+		d++;
+		t = fgetc(f);
+	} while (t != 'd');
+
+	return d+4;
 }
 
 uint32_t 

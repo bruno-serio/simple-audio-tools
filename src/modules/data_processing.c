@@ -127,5 +127,14 @@ int32_t offset_sample(int32_t sample, int32_t offset, uint16_t BitsPerSample) {
 }
 
 void
-write_scaled_fslice(file_slice f, float ratio, FILE* out) {
+write_scaled_fslice(file_slice fs, float ratio, FILE* out) {
+	fseek(fs->file, fs->offset, SEEK_SET);
+	fseek(out, 0, SEEK_END);
+
+	for (uint32_t i=0; i < fs->length; i++) {
+		int32_t s = (int32_t)(ratio * read_little_endian(fs->file, fs->BitsPerSample));
+		write_little_endian(out, s, fs->BitsPerSample);
+		//fseek(fs->file, 1, SEEK_CUR);
+		//fseek(out, 1, SEEK_CUR);
+	}
 }

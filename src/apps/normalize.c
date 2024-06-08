@@ -16,8 +16,10 @@ int main(int argc, char* argv[]) {
 	const char* sourcePath = get_filepath("../wav-files/", argv[1]);
 	FILE* wavFile = fopen(sourcePath, "rb");
 	fmt_t FMT = get_fmt(wavFile);
+	int32_t audioOffset = 0;
+	data_t DATA = get_datahead(wavFile, &audioOffset);
 	uint32_t audioSize = file_size(wavFile);
-	uint32_t audioOffset = audio_start(wavFile);	//audio_start() to be implemented.
+	//uint32_t audioOffset = audio_start(wavFile);	//audio_start() to be implemented.
 	file_slice wavSlice = new_fslice(wavFile, audioSize, audioOffset, FMT.BitsPerSample);
 	
 	int32_t wavPeak = get_abs_peak(wavFile, FMT.BitsPerSample);
