@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	FILE* wavFile = fopen(sourcePath, "rb");
 	fmt_t FMT = get_fmt(wavFile);
 	int32_t audioOffset = 0;
-	data_t DATA = get_datahead(wavFile, &audioOffset);
+	/*data_t DATA = */get_datahead(wavFile, &audioOffset);
 	uint32_t audioSize = file_size(wavFile);
 	//uint32_t audioOffset = audio_start(wavFile);	//audio_start() to be implemented.
 	file_slice wavSlice = new_fslice(wavFile, audioSize, audioOffset, FMT.BitsPerSample);
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	float scalingRatio = normalize_ratio(wavPeak, FMT.BitsPerSample);
 
 	const char* destPath = get_filepath("../output/", argv[1]);
-	FILE* outFile = fopen(sourcePath, "rb");
+	FILE* outFile = fopen(destPath, "rb");
 
 	// copy RIFF, FMT, DATA HEADER
 
@@ -34,8 +34,9 @@ int main(int argc, char* argv[]) {
 
 	// copy METADATA
 
-	fclose(wavFile);
 	__FREE_FSLICE(wavSlice, false);
+	fclose(wavFile);
+	fclose(outFile);
 	__FREE_FILEPATH(sourcePath);
 	return 0;
 }
